@@ -3,8 +3,42 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Graveyard — Pick Your Tomb</title>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cinzel+Decorative:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<title>Enter the graveyard — Degen Graveyard</title>
+<meta name="title" content="Enter the graveyard — browse buried tokens | Degen Graveyard">
+<meta name="description" content="Walk the cemetery of dead crypto tokens. Browse tombstones from $2 wooden crosses to $1,000 gothic cathedrals. Bury yours and join the eternal rest.">
+<meta name="keywords" content="degen graveyard cemetery, browse dead tokens, crypto tombstone gallery, rug pull museum, on-chain memorial, solana, USDC, memecoin graveyard">
+<meta name="author" content="Degen Graveyard">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta name="theme-color" content="#c9a84c">
+<link rel="canonical" href="https://degengraveyard.fun/graveyard.html">
+
+<!-- Favicon -->
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://degengraveyard.fun/graveyard.html">
+<meta property="og:title" content="Enter the graveyard — browse buried tokens">
+<meta property="og:description" content="Walk the cemetery of dead crypto tokens. Browse tombstones from $2 wooden crosses to $1,000 gothic cathedrals. Bury yours and join the eternal rest.">
+<meta property="og:image" content="https://degengraveyard.fun/og-image.png">
+<meta property="og:image:secure_url" content="https://degengraveyard.fun/og-image.png">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Degen Graveyard - Gothic gold cross with rose window">
+<meta property="og:site_name" content="Degen Graveyard">
+<meta property="og:locale" content="en_US">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:url" content="https://degengraveyard.fun/graveyard.html">
+<meta name="twitter:title" content="Enter the graveyard — browse buried tokens">
+<meta name="twitter:description" content="Walk the cemetery of dead crypto tokens. Browse tombstones from $2 to $1,000. Bury yours and rest in pieces.">
+<meta name="twitter:image" content="https://degengraveyard.fun/twitter-card.png">
+<meta name="twitter:image:alt" content="Degen Graveyard - Gothic gold cross logo">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cinzel+Decorative:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&family=VT323&family=Press+Start+2P&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
@@ -460,6 +494,40 @@ nav{background:linear-gradient(180deg,rgba(5,5,8,.85) 0%,rgba(5,5,8,.5) 70%,tran
 .btn-bury::before,.btn-pay::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.35),transparent);transition:left .7s}
 .btn-bury:hover::before,.btn-pay:hover::before{left:100%}
 
+
+/* === GRAVE DATE BADGE === */
+.grave-date{position:absolute;top:8px;left:8px;background:rgba(5,5,8,.85);border:1px solid rgba(201,168,76,.2);color:var(--gold-dim);font-family:'DM Mono',monospace;font-size:8px;padding:3px 7px;letter-spacing:.8px;text-transform:uppercase;z-index:4;backdrop-filter:blur(4px)}
+.grave.t-1000 .grave-date,.grave.t-250 .grave-date{font-size:10px;padding:4px 9px;border-color:rgba(201,168,76,.4);background:rgba(5,5,8,.92)}
+
+/* === MODAL DATE ROW === */
+.modal-row.modal-row-date span:last-child{color:var(--gold);font-family:'DM Mono',monospace;letter-spacing:1px}
+
+/* === 90s RETRO SUCCESS MODAL === */
+.retro-modal{position:fixed;inset:0;background:rgba(0,0,0,.96);display:none;align-items:center;justify-content:center;z-index:9999;padding:20px}
+.retro-modal.open{display:flex;animation:retroFadeIn .2s steps(3)}
+.retro-modal-content{background:#070710;border:3px solid var(--gold);box-shadow:inset 0 0 0 2px #050508,inset 0 0 0 5px var(--gold),inset 0 0 0 7px #050508,0 0 100px rgba(201,168,76,.5),0 0 200px rgba(201,168,76,.25);padding:42px 48px 36px;max-width:580px;width:100%;font-family:'VT323',monospace;color:var(--gold-bright);position:relative;image-rendering:pixelated}
+.retro-modal-content::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(0,0,0,0) 0px,rgba(0,0,0,0) 2px,rgba(0,0,0,.18) 2px,rgba(0,0,0,.18) 4px);pointer-events:none;animation:scanlines .15s steps(2) infinite}
+.retro-modal-content::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center,transparent 40%,rgba(0,0,0,.5) 100%);pointer-events:none}
+.retro-modal-title{font-family:'Press Start 2P',monospace;font-size:13px;text-align:center;letter-spacing:1.5px;margin-bottom:6px;color:var(--gold-bright);text-shadow:0 0 12px rgba(201,168,76,.9),0 3px 0 rgba(0,0,0,.7);animation:retroTitlePulse 1s steps(2) infinite;position:relative;z-index:2}
+.retro-modal-subtitle{font-family:'Press Start 2P',monospace;font-size:8px;text-align:center;letter-spacing:2px;margin-bottom:24px;color:var(--gold);opacity:.7;position:relative;z-index:2}
+.retro-modal-divider{font-family:'VT323',monospace;text-align:center;font-size:18px;color:var(--gold);letter-spacing:0;margin:14px 0;position:relative;z-index:2}
+.retro-modal-stats{font-family:'VT323',monospace;font-size:22px;line-height:1.4;position:relative;z-index:2}
+.retro-modal-row{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px dashed rgba(201,168,76,.25);padding:5px 0;gap:20px}
+.retro-modal-label{color:rgba(201,168,76,.65);text-transform:uppercase;letter-spacing:1px;font-size:18px;flex-shrink:0}
+.retro-modal-value{color:var(--gold-bright);text-align:right;text-shadow:0 0 6px rgba(201,168,76,.4);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.retro-modal-value.loss{color:#e85040}
+.retro-modal-epitaph{margin-top:18px;padding:14px 16px;border:2px dashed rgba(201,168,76,.4);font-family:'VT323',monospace;font-size:18px;line-height:1.4;color:#e8e0c8;text-align:center;position:relative;z-index:2;font-style:italic}
+.retro-modal-prompt{text-align:center;font-family:'Press Start 2P',monospace;font-size:9px;margin-top:24px;animation:promptBlink .9s steps(2) infinite;cursor:pointer;color:var(--gold-bright);letter-spacing:2px;position:relative;z-index:2;padding:8px}
+.retro-modal-prompt:hover{color:#fff;text-shadow:0 0 10px rgba(255,255,255,.8)}
+.retro-modal-tx{font-family:'VT323',monospace;font-size:14px;text-align:center;color:rgba(201,168,76,.5);margin-top:14px;letter-spacing:1px;position:relative;z-index:2;word-break:break-all}
+.retro-modal-tx a{color:var(--gold);text-decoration:none;border-bottom:1px dotted rgba(201,168,76,.4)}
+.retro-modal-tx a:hover{color:var(--gold-bright)}
+@keyframes retroFadeIn{0%{opacity:0;transform:scale(.92)}100%{opacity:1;transform:scale(1)}}
+@keyframes retroTitlePulse{0%,49%{text-shadow:0 0 12px rgba(201,168,76,.9),0 3px 0 rgba(0,0,0,.7)}50%,100%{text-shadow:0 0 24px rgba(232,197,90,1),0 0 8px rgba(232,197,90,.6),0 3px 0 rgba(0,0,0,.7)}}
+@keyframes promptBlink{0%,49%{opacity:1}50%,100%{opacity:.25}}
+@keyframes scanlines{0%{opacity:1}100%{opacity:.95}}
+@media(max-width:700px){.retro-modal-content{padding:28px 24px 24px}.retro-modal-title{font-size:11px}.retro-modal-stats{font-size:18px}.retro-modal-label{font-size:15px}.retro-modal-epitaph{font-size:15px}}
+
 </style>
 </head>
 <body>
@@ -490,8 +558,8 @@ nav{background:linear-gradient(180deg,rgba(5,5,8,.85) 0%,rgba(5,5,8,.5) 70%,tran
 <nav>
   <a href="index.html" class="nav-logo">&larr; &#x271D; Degen Graveyard</a>
   <div class="nav-right">
-    <a href="#picker">Pick a Tomb</a>
-    <a href="#cemetery">The Fallen</a>
+    <a href="#picker">Pick a tomb</a>
+    <a href="#cemetery">The fallen</a>
     <button class="btn-connect-big" id="connect-btn" onclick="connectWallet()">&#x271D; Connect Wallet</button>
   </div>
 </nav>
@@ -500,41 +568,41 @@ nav{background:linear-gradient(180deg,rgba(5,5,8,.85) 0%,rgba(5,5,8,.5) 70%,tran
 
   <div class="iron-gate">
     <div class="gate-orn">&loz; &bull; &loz; &bull; &loz;</div>
-    <div class="gate-title">The Graveyard</div>
+    <div class="gate-title">The graveyard</div>
     <div class="gate-subtitle">Pick a tomb &middot; Bury your bags &middot; Rest in pieces</div>
     <div class="gate-latin">Connect Phantom to begin &mdash; 2,847 already buried</div>
     <div class="gate-stats">
       <div><div class="gs-val" id="stat-buried">—</div><div class="gs-lbl">Buried</div></div>
-      <div><div class="gs-val" id="stat-collected">—</div><div class="gs-lbl">USDC Collected</div></div>
-      <div><div class="gs-val" id="stat-prize">—</div><div class="gs-lbl">Weekly Prize</div></div>
+      <div><div class="gs-val" id="stat-collected">—</div><div class="gs-lbl">USDC collected</div></div>
+      <div><div class="gs-val" id="stat-prize">—</div><div class="gs-lbl">Weekly prize</div></div>
     </div>
   </div>
 
   <div class="tier-picker" id="picker">
     <div class="picker-inner">
       <div class="picker-orn">&loz; &bull; &loz; &bull; &loz;</div>
-      <div class="picker-title">Step 1 &mdash; Pick Your Tomb</div>
+      <div class="picker-title">Step 1 &mdash; Pick your tomb</div>
       <div class="picker-sub">The bigger you pay, the bigger you flex. Click any tomb to bury a token.</div>
       <div class="picker-grid">
 
         <div class="tier-card" onclick="pickTier(0)">
           <div class="tier-img-wrap"><img src="tombstones/tier-0-free.png" class="tier-img" alt=""></div>
           <div class="tier-price">FREE</div>
-          <div class="tier-name">Wooden Cross</div>
+          <div class="tier-name">Wooden cross</div>
           <div class="tier-desc">Gas only</div>
         </div>
 
         <div class="tier-card" onclick="pickTier(2)">
           <div class="tier-img-wrap"><img src="tombstones/tier-1-2usd.png" class="tier-img" alt=""></div>
           <div class="tier-price">$2</div>
-          <div class="tier-name">Plain Headstone</div>
+          <div class="tier-name">Plain headstone</div>
           <div class="tier-desc">A modest start</div>
         </div>
 
         <div class="tier-card" onclick="pickTier(5)">
           <div class="tier-img-wrap"><img src="tombstones/tier-2-5usd.png" class="tier-img" alt=""></div>
           <div class="tier-price">$5</div>
-          <div class="tier-name">Engraved Stone</div>
+          <div class="tier-name">Engraved stone</div>
           <div class="tier-desc">Carved cross + base</div>
         </div>
 
@@ -549,7 +617,7 @@ nav{background:linear-gradient(180deg,rgba(5,5,8,.85) 0%,rgba(5,5,8,.5) 70%,tran
           <div class="tier-flag">Most popular</div>
           <div class="tier-img-wrap"><img src="tombstones/tier-4-25usd.png" class="tier-img" alt=""></div>
           <div class="tier-price">$25</div>
-          <div class="tier-name">Ornate Cross</div>
+          <div class="tier-name">Ornate cross</div>
           <div class="tier-desc">Urns + roses + glow</div>
         </div>
 
@@ -563,14 +631,14 @@ nav{background:linear-gradient(180deg,rgba(5,5,8,.85) 0%,rgba(5,5,8,.5) 70%,tran
         <div class="tier-card" onclick="pickTier(100)">
           <div class="tier-img-wrap"><img src="tombstones/tier-6-100usd.png" class="tier-img" alt=""></div>
           <div class="tier-price">$100</div>
-          <div class="tier-name">Weeping Angel</div>
+          <div class="tier-name">Weeping angel</div>
           <div class="tier-desc">Marble angel tomb</div>
         </div>
 
         <div class="tier-card" onclick="pickTier(250)">
           <div class="tier-img-wrap"><img src="tombstones/tier-7-250usd.png" class="tier-img" alt=""></div>
           <div class="tier-price">$250</div>
-          <div class="tier-name">Pharaoh Tomb</div>
+          <div class="tier-name">Pharaoh tomb</div>
           <div class="tier-desc">Golden triumphant angel</div>
         </div>
 
@@ -578,7 +646,7 @@ nav{background:linear-gradient(180deg,rgba(5,5,8,.85) 0%,rgba(5,5,8,.5) 70%,tran
           <div class="tier-flag whale-flag">Whale tier</div>
           <div class="tier-img-wrap"><img src="tombstones/tier-8-1000usd.png" class="tier-img" alt=""></div>
           <div class="tier-price">$1,000</div>
-          <div class="tier-name">Gothic Cathedral</div>
+          <div class="tier-name">Gothic cathedral</div>
           <div class="tier-desc">The ultimate flex</div>
         </div>
 
@@ -588,17 +656,18 @@ nav{background:linear-gradient(180deg,rgba(5,5,8,.85) 0%,rgba(5,5,8,.5) 70%,tran
 
   <div class="cemetery" id="cemetery">
     <div class="cemetery-title">
-      <div class="cemetery-title-text">&#x271D; The Fallen &#x271D;</div>
+      <div class="cemetery-title-text">&#x271D; The fallen &#x271D;</div>
       <div class="cemetery-title-sub">Step 2 &mdash; Browse the buried &middot; Click any grave</div>
     </div>
 
     <div class="graves">
 
-      <div class="grave t-1000" onclick="openM(this)" data-img="tombstones/tier-8-1000usd.png" data-name="$LUNA" data-chain="Terra" data-loss="-$487,200" data-pct="-99.99%" data-in="$487,500" data-out="$300" data-time="3 days" data-cod="Algorithmic collapse" data-epitaph="Anchor protocol promised 20% APY. The protocol delivered -100%. I lost everything in 72 hours watching the chart in real time, refreshing CoinGecko every 30 seconds, hoping for a bounce that never came. Do Kwon is in Montenegro. My retirement is in the void. The cathedral I built here is the last monument to the dumbest financial decision of my entire life." data-addr="0x9af...e2d" data-spent="$1,000" data-votes="9,847">
-        <div class="winner-badge">&#9760; All-Time Worst Rug</div>
+      <div class="grave t-1000" onclick="openM(this)" data-img="tombstones/tier-8-1000usd.png" data-name="$LUNA" data-date="15 MAY 22" data-chain="Terra" data-loss="-$487,200" data-pct="-99.99%" data-in="$487,500" data-out="$300" data-time="3 days" data-cod="Algorithmic collapse" data-epitaph="Anchor protocol promised 20% APY. The protocol delivered -100%. I lost everything in 72 hours watching the chart in real time, refreshing CoinGecko every 30 seconds, hoping for a bounce that never came. Do Kwon is in Montenegro. My retirement is in the void. The cathedral I built here is the last monument to the dumbest financial decision of my entire life." data-addr="0x9af...e2d" data-spent="$1,000" data-votes="9,847">
+        <div class="winner-badge">&#9760; All-time worst rug</div>
         <img src="tombstones/tier-8-1000usd.png" class="grave-img" alt="">
         <div class="grave-glow"></div>
         <div class="grave-spent">$1,000</div>
+        <div class="grave-date">15 MAY 22</div>
         <div class="grave-overlay">
           <div class="grave-orn">&loz; &bull; &loz; &bull; &loz;</div>
           <div class="grave-name">$LUNA</div>
@@ -611,10 +680,11 @@ nav{background:linear-gradient(180deg,rgba(5,5,8,.85) 0%,rgba(5,5,8,.5) 70%,tran
         </div>
       </div>
 
-      <div class="grave t-250" onclick="openM(this)" data-img="tombstones/tier-7-250usd.png" data-name="$FTT" data-chain="Solana" data-loss="-$22,400" data-pct="-97.8%" data-in="$24,500" data-out="$539" data-time="1 year" data-cod="Exchange collapse" data-epitaph="SBF said funds were safe. Reader, they were in the Bahamas with my retirement and his parents' beach house." data-addr="0x7dc...a44" data-spent="$280" data-votes="4,201">
+      <div class="grave t-250" onclick="openM(this)" data-img="tombstones/tier-7-250usd.png" data-name="$FTT" data-date="11 NOV 22" data-chain="Solana" data-loss="-$22,400" data-pct="-97.8%" data-in="$24,500" data-out="$539" data-time="1 year" data-cod="Exchange collapse" data-epitaph="SBF said funds were safe. Reader, they were in the Bahamas with my retirement and his parents' beach house." data-addr="0x7dc...a44" data-spent="$280" data-votes="4,201">
         <img src="tombstones/tier-7-250usd.png" class="grave-img" alt="">
         <div class="grave-glow"></div>
         <div class="grave-spent">$280</div>
+        <div class="grave-date">11 NOV 22</div>
         <div class="grave-overlay">
           <div class="grave-orn">&loz; &bull; &loz;</div>
           <div class="grave-name">$FTT</div>
@@ -627,11 +697,12 @@ nav{background:linear-gradient(180deg,rgba(5,5,8,.85) 0%,rgba(5,5,8,.5) 70%,tran
         </div>
       </div>
 
-      <div class="grave t-100" onclick="openM(this)" data-img="tombstones/tier-6-100usd.png" data-name="$BITCONNECT" data-chain="Ethereum" data-loss="-$14,200" data-pct="-100%" data-in="$14,200" data-out="$0" data-time="8 months" data-cod="Ponzi collapse" data-epitaph="HEY HEY HEYYY. WASA WASA WASAAA. I was financially independently ruined. Carlos would be proud." data-addr="0x44d...c82" data-spent="$120" data-votes="3,401">
+      <div class="grave t-100" onclick="openM(this)" data-img="tombstones/tier-6-100usd.png" data-name="$BITCONNECT" data-date="17 JAN 18" data-chain="Ethereum" data-loss="-$14,200" data-pct="-100%" data-in="$14,200" data-out="$0" data-time="8 months" data-cod="Ponzi collapse" data-epitaph="HEY HEY HEYYY. WASA WASA WASAAA. I was financially independently ruined. Carlos would be proud." data-addr="0x44d...c82" data-spent="$120" data-votes="3,401">
         <div class="winner-badge">&#9760; Week 13 Winner</div>
         <img src="tombstones/tier-6-100usd.png" class="grave-img" alt="">
         <div class="grave-glow"></div>
         <div class="grave-spent">$120</div>
+        <div class="grave-date">17 JAN 18</div>
         <div class="grave-overlay">
           <div class="grave-orn">&loz; &bull; &loz;</div>
           <div class="grave-name">$BITCONNECT</div>
@@ -644,20 +715,22 @@ nav{background:linear-gradient(180deg,rgba(5,5,8,.85) 0%,rgba(5,5,8,.5) 70%,tran
         </div>
       </div>
 
-      <div class="grave t-free" onclick="openM(this)" data-img="tombstones/tier-0-free.png" data-name="$RUG1" data-chain="BSC" data-loss="-$18" data-pct="-100%" data-in="$18" data-out="$0" data-time="5 min" data-cod="Rug" data-epitaph="Lol." data-addr="0x111...aaa" data-spent="Free" data-votes="2">
+      <div class="grave t-free" onclick="openM(this)" data-img="tombstones/tier-0-free.png" data-name="$RUG1" data-date="06 APR 26" data-chain="BSC" data-loss="-$18" data-pct="-100%" data-in="$18" data-out="$0" data-time="5 min" data-cod="Rug" data-epitaph="Lol." data-addr="0x111...aaa" data-spent="Free" data-votes="2">
         <img src="tombstones/tier-0-free.png" class="grave-img" alt="">
         <div class="grave-glow"></div>
         <div class="grave-spent">Free</div>
+        <div class="grave-date">06 APR 26</div>
         <div class="grave-overlay">
           <div class="grave-name">$RUG1</div>
           <div class="grave-loss">-$18</div>
         </div>
       </div>
 
-      <div class="grave t-50" onclick="openM(this)" data-img="tombstones/tier-5-50usd.png" data-name="$LIBRA" data-chain="Solana" data-loss="-$5,600" data-pct="-99.5%" data-in="$5,628" data-out="$28" data-time="30 min" data-cod="Presidential rug" data-epitaph="An actual sitting president of a G20 nation shilled this. I was exit liquidity for Argentina's foreign debt." data-addr="0xb09...d33" data-spent="$60" data-votes="3,890">
+      <div class="grave t-50" onclick="openM(this)" data-img="tombstones/tier-5-50usd.png" data-name="$LIBRA" data-date="14 FEB 25" data-chain="Solana" data-loss="-$5,600" data-pct="-99.5%" data-in="$5,628" data-out="$28" data-time="30 min" data-cod="Presidential rug" data-epitaph="An actual sitting president of a G20 nation shilled this. I was exit liquidity for Argentina's foreign debt." data-addr="0xb09...d33" data-spent="$60" data-votes="3,890">
         <img src="tombstones/tier-5-50usd.png" class="grave-img" alt="">
         <div class="grave-glow"></div>
         <div class="grave-spent">$60</div>
+        <div class="grave-date">14 FEB 25</div>
         <div class="grave-overlay">
           <div class="grave-orn">&loz; &bull; &loz;</div>
           <div class="grave-name">$LIBRA</div>
@@ -669,10 +742,11 @@ nav{background:linear-gradient(180deg,rgba(5,5,8,.85) 0%,rgba(5,5,8,.5) 70%,tran
         </div>
       </div>
 
-      <div class="grave t-25" onclick="openM(this)" data-img="tombstones/tier-4-25usd.png" data-name="$SQUIDGAME" data-chain="BSC" data-loss="-$3,400" data-pct="-100%" data-in="$3,400" data-out="$0" data-time="2 weeks" data-cod="Honeypot" data-epitaph="Couldn't sell. Literally. The sell button was decoration. Most expensive Netflix tie-in ever." data-addr="0xc33...e5d" data-spent="$32" data-votes="1,892">
+      <div class="grave t-25" onclick="openM(this)" data-img="tombstones/tier-4-25usd.png" data-name="$SQUIDGAME" data-date="01 NOV 21" data-chain="BSC" data-loss="-$3,400" data-pct="-100%" data-in="$3,400" data-out="$0" data-time="2 weeks" data-cod="Honeypot" data-epitaph="Couldn't sell. Literally. The sell button was decoration. Most expensive Netflix tie-in ever." data-addr="0xc33...e5d" data-spent="$32" data-votes="1,892">
         <img src="tombstones/tier-4-25usd.png" class="grave-img" alt="">
         <div class="grave-glow"></div>
         <div class="grave-spent">$32</div>
+        <div class="grave-date">01 NOV 21</div>
         <div class="grave-overlay">
           <div class="grave-name">$SQUIDGAME</div>
           <div class="grave-chain">BSC</div>
@@ -683,20 +757,22 @@ nav{background:linear-gradient(180deg,rgba(5,5,8,.85) 0%,rgba(5,5,8,.5) 70%,tran
         </div>
       </div>
 
-      <div class="grave t-2" onclick="openM(this)" data-img="tombstones/tier-1-2usd.png" data-name="$CATGIRL" data-chain="BSC" data-loss="-$620" data-pct="-99.9%" data-in="$620" data-out="$0.62" data-time="5 days" data-cod="Abandoned" data-epitaph="GF made me buy it. She's gone too. At least the token had cute art." data-addr="0xf72...1a9" data-spent="$3" data-votes="567">
+      <div class="grave t-2" onclick="openM(this)" data-img="tombstones/tier-1-2usd.png" data-name="$CATGIRL" data-date="02 APR 26" data-chain="BSC" data-loss="-$620" data-pct="-99.9%" data-in="$620" data-out="$0.62" data-time="5 days" data-cod="Abandoned" data-epitaph="GF made me buy it. She's gone too. At least the token had cute art." data-addr="0xf72...1a9" data-spent="$3" data-votes="567">
         <img src="tombstones/tier-1-2usd.png" class="grave-img" alt="">
         <div class="grave-glow"></div>
         <div class="grave-spent">$3</div>
+        <div class="grave-date">02 APR 26</div>
         <div class="grave-overlay">
           <div class="grave-name">$CATGIRL</div>
           <div class="grave-loss">-$620</div>
         </div>
       </div>
 
-      <div class="grave t-10" onclick="openM(this)" data-img="tombstones/tier-3-10usd.png" data-name="$HAWK" data-chain="Solana" data-loss="-$2,150" data-pct="-99.1%" data-in="$2,170" data-out="$19.50" data-time="4 hours" data-cod="Celebrity dump" data-epitaph="Hailey said tuah. My portfolio said nah. Fastest celebrity rug since the last celebrity rug." data-addr="0xa22...f41" data-spent="$14" data-votes="2,103">
+      <div class="grave t-10" onclick="openM(this)" data-img="tombstones/tier-3-10usd.png" data-name="$HAWK" data-date="04 DEC 24" data-chain="Solana" data-loss="-$2,150" data-pct="-99.1%" data-in="$2,170" data-out="$19.50" data-time="4 hours" data-cod="Celebrity dump" data-epitaph="Hailey said tuah. My portfolio said nah. Fastest celebrity rug since the last celebrity rug." data-addr="0xa22...f41" data-spent="$14" data-votes="2,103">
         <img src="tombstones/tier-3-10usd.png" class="grave-img" alt="">
         <div class="grave-glow"></div>
         <div class="grave-spent">$14</div>
+        <div class="grave-date">04 DEC 24</div>
         <div class="grave-overlay">
           <div class="grave-name">$HAWK</div>
           <div class="grave-chain">Solana</div>
@@ -707,10 +783,11 @@ nav{background:linear-gradient(180deg,rgba(5,5,8,.85) 0%,rgba(5,5,8,.5) 70%,tran
         </div>
       </div>
 
-      <div class="grave t-5" onclick="openM(this)" data-img="tombstones/tier-2-5usd.png" data-name="$RUGPULL" data-chain="Solana" data-loss="-$4,187" data-pct="-99.7%" data-in="$4,200" data-out="$12.60" data-time="47 min" data-cod="Dev dumped" data-epitaph="Dev said community takeover then deleted the TG in 3 minutes flat. The community was just me." data-addr="0x8f3...a2d" data-spent="$7" data-votes="342">
+      <div class="grave t-5" onclick="openM(this)" data-img="tombstones/tier-2-5usd.png" data-name="$RUGPULL" data-date="07 APR 26" data-chain="Solana" data-loss="-$4,187" data-pct="-99.7%" data-in="$4,200" data-out="$12.60" data-time="47 min" data-cod="Dev dumped" data-epitaph="Dev said community takeover then deleted the TG in 3 minutes flat. The community was just me." data-addr="0x8f3...a2d" data-spent="$7" data-votes="342">
         <img src="tombstones/tier-2-5usd.png" class="grave-img" alt="">
         <div class="grave-glow"></div>
         <div class="grave-spent">$7</div>
+        <div class="grave-date">07 APR 26</div>
         <div class="grave-overlay">
           <div class="grave-name">$RUGPULL</div>
           <div class="grave-chain">Solana</div>
@@ -777,7 +854,7 @@ nav{background:linear-gradient(180deg,rgba(5,5,8,.85) 0%,rgba(5,5,8,.5) 70%,tran
     <div class="modal-body">
       <div style="text-align:center;margin-bottom:1.25rem">
         <div style="font-family:'Cinzel Decorative',serif;font-size:24px;color:var(--gold-bright);margin-bottom:6px">&#x271D;</div>
-        <div style="font-family:'Cinzel',serif;font-size:18px;color:var(--gold);letter-spacing:3px;text-transform:uppercase">Bury a Token</div>
+        <div style="font-family:'Cinzel',serif;font-size:18px;color:var(--gold);letter-spacing:3px;text-transform:uppercase">Bury a token</div>
         <div style="font-size:10px;color:var(--text3);margin-top:4px;letter-spacing:1px">Connect &middot; Fill &middot; Pay &middot; Rest in pieces</div>
       </div>
       <div class="form-group"><label>Token name</label><input type="text" placeholder="$RUGPULL" class="form-input" id="f-name"></div>
@@ -813,7 +890,7 @@ nav{background:linear-gradient(180deg,rgba(5,5,8,.85) 0%,rgba(5,5,8,.5) 70%,tran
         <div class="form-split-row"><span>Prize pool (15%)</span><span id="split-pool">$3.75</span></div>
         <div class="form-split-row"><span>Buyback &amp; burn (10%)</span><span id="split-burn">$2.50</span></div>
       </div>
-      <button class="btn-pay" id="pay-btn" onclick="buyTombstone()">&#x271D; Connect Wallet &amp; Pay $25 USDC</button>
+      <button class="btn-pay" id="pay-btn" onclick="buyTombstone()">&#x271D; Connect wallet &amp; pay $25 USDC</button>
     </div>
   </div>
 </div>
@@ -836,6 +913,7 @@ nav{background:linear-gradient(180deg,rgba(5,5,8,.85) 0%,rgba(5,5,8,.5) 70%,tran
         <div class="modal-row"><span>Recovered</span><span id="mo"></span></div>
         <div class="modal-row"><span>Time held</span><span id="mt"></span></div>
         <div class="modal-row"><span>Cause of death</span><span id="md"></span></div>
+        <div class="modal-row modal-row-date"><span>Buried on</span><span id="mdate"></span></div>
       </div>
       <div class="modal-epitaph" id="me"></div>
       <div class="modal-spent"><div class="modal-spent-lbl">Total USDC spent on this grave</div><div class="modal-spent-val" id="ms"></div></div>
@@ -853,7 +931,7 @@ nav{background:linear-gradient(180deg,rgba(5,5,8,.85) 0%,rgba(5,5,8,.5) 70%,tran
       </div>
       <div class="modal-footer">
         <span class="modal-addr" id="ma"></span>
-        <button class="modal-vote">&#9760; Vote Worst Rug</button>
+        <button class="modal-vote">&#9760; Vote worst rug</button>
       </div>
     </div>
   </div>
@@ -883,6 +961,7 @@ function openM(el){
   document.getElementById('me').textContent='\u201C'+d.epitaph+'\u201D';
   document.getElementById('ms').textContent=d.spent;
   document.getElementById('ma').textContent=d.addr;
+  document.getElementById('mdate').textContent=d.date||'—';
   document.getElementById('modal').classList.add('open');
 }
 function closeM(){document.getElementById('modal').classList.remove('open')}
@@ -932,9 +1011,37 @@ function selectSize(btn,amt){
   document.getElementById('split-pool').textContent='$'+(amt*0.15).toFixed(2);
   document.getElementById('split-burn').textContent='$'+(amt*0.10).toFixed(2);
   document.getElementById('size-text').textContent=sizeDesc[amt];
-  document.getElementById('pay-btn').textContent=amt===0?'\u271D Get a Free Grave (gas only)':'\u271D '+(walletConnected?'Pay':'Connect Wallet & Pay')+' $'+amt+' USDC';
+  document.getElementById('pay-btn').textContent=amt===0?'\u271D Get a free grave (gas only)':'\u271D '+(walletConnected?'Pay':'Connect wallet & pay')+' $'+amt+' USDC';
   document.querySelector('.form-split-title').textContent='Your $'+amt+' will be split instantly:';
 }
+
+
+function showRetroSuccess(tombstone, amount, signature){
+  const formatNum = (n) => parseFloat(n||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+  document.getElementById('rm-token').textContent = tombstone.tokenName || '-';
+  document.getElementById('rm-chain').textContent = (tombstone.chain || '-').toUpperCase();
+  document.getElementById('rm-tier').textContent = '$' + amount + ' USDC';
+  document.getElementById('rm-invested').textContent = '$' + formatNum(tombstone.invested);
+  const lost = parseFloat(tombstone.invested||0) - parseFloat(tombstone.recovered||0);
+  document.getElementById('rm-lost').textContent = '-$' + formatNum(lost);
+  document.getElementById('rm-cod').textContent = (tombstone.cod || '-').toUpperCase();
+  const now = new Date();
+  const months = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+  document.getElementById('rm-date').textContent = String(now.getDate()).padStart(2,'0') + ' ' + months[now.getMonth()] + ' ' + String(now.getFullYear()).slice(-2);
+  document.getElementById('rm-epitaph').textContent = '"' + (tombstone.epitaph || '') + '"';
+  if(signature){
+    const short = signature.slice(0,12) + '...' + signature.slice(-12);
+    document.getElementById('rm-tx').innerHTML = 'TX: <a href="https://solscan.io/tx/' + signature + '" target="_blank">' + short + '</a>';
+  }else{
+    document.getElementById('rm-tx').textContent = '';
+  }
+  document.getElementById('retro-modal').classList.add('open');
+}
+function closeRetroModal(){
+  document.getElementById('retro-modal').classList.remove('open');
+  closeBury();
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'||e.key==='Enter'){const rm=document.getElementById('retro-modal');if(rm&&rm.classList.contains('open'))closeRetroModal()}});
 
 /* ============================================
    PHANTOM WALLET CONNECT + USDC 5-WAY SPLIT
@@ -1008,7 +1115,7 @@ function updateWalletUI(){
   }
   const payBtn = document.getElementById('pay-btn');
   if(payBtn && selectedAmount > 0){
-    payBtn.textContent = '\u271D ' + (walletConnected ? 'Pay' : 'Connect Wallet & Pay') + ' $' + selectedAmount + ' USDC';
+    payBtn.textContent = '\u271D ' + (walletConnected ? 'Pay' : 'Connect wallet & pay') + ' $' + selectedAmount + ' USDC';
   }
 }
 
@@ -1140,11 +1247,10 @@ async function buyTombstone(){
 
     payBtn.textContent = '\u2713 BURIED. Rest in pieces.';
     setTimeout(() => {
-      alert('Tombstone created!\n\nTX: ' + signature + '\n\nView on Solscan:\nhttps://solscan.io/tx/' + signature);
-      closeBury();
+      showRetroSuccess(formData, selectedAmount, signature);
       payBtn.textContent = originalText;
       payBtn.disabled = false;
-    }, 1500);
+    }, 1200);
 
   }catch(err){
     console.error('Payment failed:', err);
@@ -1176,13 +1282,13 @@ async function submitFreeTombstone(formData){
     payBtn.textContent = '\u2713 Free grave created';
     setTimeout(() => {
       closeBury();
-      payBtn.textContent = '\u271D Get a Free Grave (gas only)';
+      payBtn.textContent = '\u271D Get a free grave (gas only)';
       payBtn.disabled = false;
     }, 1500);
   }catch(err){
     payBtn.textContent = '\u2716 ' + (err.message || 'Failed');
     setTimeout(() => {
-      payBtn.textContent = '\u271D Get a Free Grave (gas only)';
+      payBtn.textContent = '\u271D Get a free grave (gas only)';
       payBtn.disabled = false;
     }, 3000);
   }
@@ -1281,6 +1387,29 @@ async function fetchLiveStats(){
   }
 }
 </script>
+
+
+<!-- 90s RETRO SUCCESS MODAL -->
+<div class="retro-modal" id="retro-modal">
+  <div class="retro-modal-content">
+    <div class="retro-modal-title">&#x2620; INTERMENT COMPLETE &#x2620;</div>
+    <div class="retro-modal-subtitle">--- TOMBSTONE RECORDED ON-CHAIN ---</div>
+    <div class="retro-modal-divider">==================================</div>
+    <div class="retro-modal-stats">
+      <div class="retro-modal-row"><span class="retro-modal-label">Token</span><span class="retro-modal-value" id="rm-token">-</span></div>
+      <div class="retro-modal-row"><span class="retro-modal-label">Chain</span><span class="retro-modal-value" id="rm-chain">-</span></div>
+      <div class="retro-modal-row"><span class="retro-modal-label">Tier</span><span class="retro-modal-value" id="rm-tier">-</span></div>
+      <div class="retro-modal-row"><span class="retro-modal-label">Invested</span><span class="retro-modal-value" id="rm-invested">-</span></div>
+      <div class="retro-modal-row"><span class="retro-modal-label">Lost</span><span class="retro-modal-value loss" id="rm-lost">-</span></div>
+      <div class="retro-modal-row"><span class="retro-modal-label">Killed by</span><span class="retro-modal-value" id="rm-cod">-</span></div>
+      <div class="retro-modal-row"><span class="retro-modal-label">Buried on</span><span class="retro-modal-value" id="rm-date">-</span></div>
+    </div>
+    <div class="retro-modal-epitaph" id="rm-epitaph">"-"</div>
+    <div class="retro-modal-divider">--- &#x2620; REST IN PIECES &#x2620; ---</div>
+    <div class="retro-modal-tx" id="rm-tx"></div>
+    <div class="retro-modal-prompt" onclick="closeRetroModal()">&gt; PRESS TO CONTINUE &lt;</div>
+  </div>
+</div>
 
 </body>
 </html>
