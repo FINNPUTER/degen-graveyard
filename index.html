@@ -334,10 +334,56 @@ footer p{font-size:10px;color:var(--text4);letter-spacing:2px;font-family:'Cinze
 @keyframes lightRay{0%{opacity:0;transform:translateY(-20px)}50%{opacity:.6}100%{opacity:0;transform:translateY(20px)}}
 @keyframes scanGold{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
 
-.moon{position:fixed;top:60px;right:80px;width:90px;height:90px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#f0e8d0 0%,#d8d0b8 25%,#a8a090 60%,#787060 85%);z-index:2;animation:moonPulse 6s ease-in-out infinite;pointer-events:none}
-.moon::before{content:'';position:absolute;inset:-30px;border-radius:50%;background:radial-gradient(circle,rgba(232,224,200,.08) 0%,transparent 60%);pointer-events:none}
-.moon::after{content:'';position:absolute;inset:-100px;border-radius:50%;background:radial-gradient(circle,rgba(232,224,200,.04) 0%,transparent 70%);pointer-events:none}
-@media(max-width:700px){.moon{width:60px;height:60px;top:80px;right:30px}}
+.moon{position:fixed;top:50px;right:90px;width:170px;height:170px;border-radius:50%;background:
+  radial-gradient(circle at 28% 22%,rgba(0,0,0,.18) 0%,transparent 7%),
+  radial-gradient(circle at 62% 32%,rgba(0,0,0,.14) 0%,transparent 5%),
+  radial-gradient(circle at 42% 55%,rgba(0,0,0,.22) 0%,transparent 9%),
+  radial-gradient(circle at 72% 68%,rgba(0,0,0,.16) 0%,transparent 6%),
+  radial-gradient(circle at 22% 72%,rgba(0,0,0,.13) 0%,transparent 5%),
+  radial-gradient(circle at 55% 78%,rgba(0,0,0,.1) 0%,transparent 4%),
+  radial-gradient(circle at 80% 45%,rgba(0,0,0,.09) 0%,transparent 4%),
+  radial-gradient(circle at 35% 35%,#f5ecd0 0%,#e0d5b0 30%,#a89c80 65%,#5a523e 95%);
+  box-shadow:
+    inset -22px -28px 65px rgba(0,0,0,.55),
+    inset 8px 8px 35px rgba(255,250,220,.18),
+    0 0 70px rgba(232,224,200,.45),
+    0 0 160px rgba(232,224,200,.22),
+    0 0 320px rgba(232,224,200,.1),
+    0 0 580px rgba(180,170,140,.05);
+  z-index:2;animation:moonPulse 8s ease-in-out infinite;pointer-events:none}
+.moon::before{content:'';position:absolute;inset:-50px;border-radius:50%;background:radial-gradient(circle,rgba(232,224,200,.08) 0%,transparent 65%);pointer-events:none;animation:moonPulse 8s ease-in-out infinite}
+.moon::after{content:'';position:absolute;inset:-180px;border-radius:50%;background:radial-gradient(circle,rgba(232,224,200,.04) 0%,transparent 70%);pointer-events:none}
+@media(max-width:700px){.moon{width:110px;height:110px;top:70px;right:30px}}
+
+/* === BATS === */
+.bat{position:fixed;pointer-events:none;z-index:3;filter:drop-shadow(0 0 3px rgba(0,0,0,.9))}
+.bat svg{width:100%;height:100%;display:block}
+.bat svg path,.bat svg circle{fill:#050508}
+.bat.b1{width:38px;height:19px;top:18%;left:-5%;animation:batFly1 32s linear infinite;animation-delay:-2s}
+.bat.b2{width:24px;height:12px;top:32%;left:-5%;animation:batFly1 28s linear infinite;animation-delay:-12s}
+.bat.b3{width:46px;height:23px;top:12%;left:-5%;animation:batFly2 40s linear infinite;animation-delay:-22s}
+.bat.b4{width:22px;height:11px;top:42%;left:-5%;animation:batFly1 35s linear infinite;animation-delay:-8s}
+.bat.b5{width:32px;height:16px;top:25%;left:-5%;animation:batFly2 30s linear infinite;animation-delay:-18s}
+@keyframes batFly1{
+  0%{transform:translate(0,0) scale(1);opacity:0}
+  5%{opacity:.85}
+  20%{transform:translate(25vw,-15px) scale(.95)}
+  40%{transform:translate(45vw,20px) scale(1.05)}
+  60%{transform:translate(65vw,-10px) scale(.9)}
+  80%{transform:translate(85vw,15px) scale(1)}
+  95%{opacity:.85}
+  100%{transform:translate(110vw,0) scale(1);opacity:0}
+}
+@keyframes batFly2{
+  0%{transform:translate(0,0) scale(1);opacity:0}
+  5%{opacity:.8}
+  25%{transform:translate(30vw,25px) scale(1.1)}
+  50%{transform:translate(55vw,-20px) scale(.85)}
+  75%{transform:translate(80vw,15px) scale(1.05)}
+  95%{opacity:.8}
+  100%{transform:translate(110vw,-5px) scale(1);opacity:0}
+}
+@media(max-width:700px){.bat{display:none}}
 
 .embers{position:fixed;inset:0;pointer-events:none;z-index:6;overflow:hidden}
 .ember{position:absolute;bottom:-10px;width:2px;height:2px;background:#e6c55a;border-radius:50%;box-shadow:0 0 6px 2px rgba(230,197,90,.5),0 0 12px 4px rgba(230,197,90,.2);animation:emberRise linear infinite}
@@ -433,6 +479,11 @@ nav{background:linear-gradient(180deg,rgba(5,5,8,.85) 0%,rgba(5,5,8,.5) 70%,tran
 <div class="vignette"></div>
 <div class="grain"></div>
 <div class="moon"></div>
+<svg class="bat b1" viewBox="0 0 60 30" xmlns="http://www.w3.org/2000/svg"><path d="M30 14 C26 8 20 6 14 9 C10 5 4 5 1 9 C5 11 3 14 1 16 C5 14 9 16 11 20 C13 16 17 16 19 18 C21 14 25 16 27 16 L30 14 L33 16 C35 16 39 14 41 18 C43 16 47 16 49 20 C51 16 55 14 59 16 C57 14 56 11 59 9 C56 5 50 5 46 9 C40 6 34 8 30 14 Z"/><circle cx="30" cy="15" r="1.5"/></svg>
+<svg class="bat b2" viewBox="0 0 60 30" xmlns="http://www.w3.org/2000/svg"><path d="M30 14 C26 8 20 6 14 9 C10 5 4 5 1 9 C5 11 3 14 1 16 C5 14 9 16 11 20 C13 16 17 16 19 18 C21 14 25 16 27 16 L30 14 L33 16 C35 16 39 14 41 18 C43 16 47 16 49 20 C51 16 55 14 59 16 C57 14 56 11 59 9 C56 5 50 5 46 9 C40 6 34 8 30 14 Z"/><circle cx="30" cy="15" r="1.5"/></svg>
+<svg class="bat b3" viewBox="0 0 60 30" xmlns="http://www.w3.org/2000/svg"><path d="M30 14 C26 8 20 6 14 9 C10 5 4 5 1 9 C5 11 3 14 1 16 C5 14 9 16 11 20 C13 16 17 16 19 18 C21 14 25 16 27 16 L30 14 L33 16 C35 16 39 14 41 18 C43 16 47 16 49 20 C51 16 55 14 59 16 C57 14 56 11 59 9 C56 5 50 5 46 9 C40 6 34 8 30 14 Z"/><circle cx="30" cy="15" r="1.5"/></svg>
+<svg class="bat b4" viewBox="0 0 60 30" xmlns="http://www.w3.org/2000/svg"><path d="M30 14 C26 8 20 6 14 9 C10 5 4 5 1 9 C5 11 3 14 1 16 C5 14 9 16 11 20 C13 16 17 16 19 18 C21 14 25 16 27 16 L30 14 L33 16 C35 16 39 14 41 18 C43 16 47 16 49 20 C51 16 55 14 59 16 C57 14 56 11 59 9 C56 5 50 5 46 9 C40 6 34 8 30 14 Z"/><circle cx="30" cy="15" r="1.5"/></svg>
+<svg class="bat b5" viewBox="0 0 60 30" xmlns="http://www.w3.org/2000/svg"><path d="M30 14 C26 8 20 6 14 9 C10 5 4 5 1 9 C5 11 3 14 1 16 C5 14 9 16 11 20 C13 16 17 16 19 18 C21 14 25 16 27 16 L30 14 L33 16 C35 16 39 14 41 18 C43 16 47 16 49 20 C51 16 55 14 59 16 C57 14 56 11 59 9 C56 5 50 5 46 9 C40 6 34 8 30 14 Z"/><circle cx="30" cy="15" r="1.5"/></svg>
 <div class="light-rays"></div>
 <div class="embers">
   <div class="ember"></div>
@@ -460,13 +511,6 @@ nav{background:linear-gradient(180deg,rgba(5,5,8,.85) 0%,rgba(5,5,8,.5) 70%,tran
 <div class="page">
 
   <div class="iron-gate">
-    <div class="gate-frame">
-      <div class="gate-pillar l"><div class="finial"></div></div>
-      <div class="gate-pillar r"><div class="finial"></div></div>
-      <div class="gate-arch-bar"></div>
-      <div class="gate-chains l"><div class="chain-link"></div><div class="chain-link"></div><div class="chain-link"></div></div>
-      <div class="gate-chains r"><div class="chain-link"></div><div class="chain-link"></div><div class="chain-link"></div></div>
-    </div>
     <div class="gate-orn">&loz; &bull; &loz; &bull; &loz;</div>
     <div class="gate-title">The Graveyard</div>
     <div class="gate-subtitle">Where Rugged Tokens Find Eternal Rest</div>
