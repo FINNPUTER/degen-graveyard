@@ -109,7 +109,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 
 .graves{display:grid;grid-template-columns:repeat(12,1fr);gap:14px;margin-top:2rem}
 
-.grave{position:relative;cursor:pointer;transition:transform .5s cubic-bezier(.23,1,.32,1);animation:fadeUp .8s ease-out both;overflow:hidden;background:#000}
+.grave{position:relative;cursor:pointer;transition:transform .5s cubic-bezier(.23,1,.32,1);animation:fadeUp .8s ease-out both;background:#000}
 .grave:hover{transform:translateY(-6px) scale(1.01);z-index:50}
 .grave:hover .grave-overlay{opacity:1}
 .grave:hover .grave-glow{opacity:1}
@@ -129,16 +129,16 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 .grave-votes{font-size:9px;color:var(--gold3);text-align:center;margin-top:6px;letter-spacing:1px}
 .grave-spent{position:absolute;top:8px;right:8px;background:rgba(5,5,8,.85);border:1px solid rgba(201,168,76,.2);color:var(--gold);font-family:'DM Mono',monospace;font-size:9px;padding:3px 7px;letter-spacing:.5px;z-index:4;backdrop-filter:blur(4px)}
 
-/* Tier sizes - grid spans */
+/* Tier sizes - grid spans, all use 2/3 to match image proportions */
 .grave.t-free{grid-column:span 1;aspect-ratio:2/3}
 .grave.t-2{grid-column:span 2;aspect-ratio:2/3}
 .grave.t-5{grid-column:span 2;aspect-ratio:2/3}
 .grave.t-10{grid-column:span 3;aspect-ratio:2/3}
 .grave.t-25{grid-column:span 3;aspect-ratio:2/3}
-.grave.t-50{grid-column:span 4;aspect-ratio:3/4}
-.grave.t-100{grid-column:span 4;aspect-ratio:3/4}
-.grave.t-250{grid-column:span 5;aspect-ratio:3/4}
-.grave.t-1000{grid-column:span 6;aspect-ratio:3/4}
+.grave.t-50{grid-column:span 4;aspect-ratio:2/3}
+.grave.t-100{grid-column:span 4;aspect-ratio:2/3}
+.grave.t-250{grid-column:span 5;aspect-ratio:2/3}
+.grave.t-1000{grid-column:span 6;aspect-ratio:2/3}
 
 .grave.t-free .grave-name{font-size:9px}
 .grave.t-free .grave-chain,.grave.t-free .grave-pct,.grave.t-free .grave-orn,.grave.t-free .grave-epitaph,.grave.t-free .grave-votes{display:none}
@@ -190,7 +190,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 .grave.t-1000 .grave-orn{color:rgba(201,168,76,.5);font-size:9px}
 .grave.t-1000 .grave-epitaph{font-size:11px;color:var(--text)}
 
-.winner-badge{position:absolute;top:-10px;left:50%;transform:translateX(-50%);z-index:10;background:linear-gradient(135deg,var(--gold2),var(--gold-bright),var(--gold2));color:var(--bg);font-family:'Cinzel',serif;font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:4px 14px;white-space:nowrap;box-shadow:0 4px 16px rgba(201,168,76,.3),0 0 20px rgba(201,168,76,.2)}
+.winner-badge{position:absolute;top:-14px;left:50%;transform:translateX(-50%);z-index:20;background:linear-gradient(135deg,var(--gold2),var(--gold-bright),var(--gold2));color:var(--bg);font-family:'Cinzel',serif;font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;padding:6px 18px;white-space:nowrap;box-shadow:0 6px 24px rgba(201,168,76,.4),0 0 40px rgba(201,168,76,.3),0 2px 8px rgba(0,0,0,.6);border:1px solid rgba(255,255,255,.2)}
 
 .tier-picker{position:relative;z-index:20;max-width:1300px;margin:3rem auto 0;padding:3rem 1.5rem 2rem}
 .picker-inner{background:rgba(10,10,16,.85);border:1px solid rgba(201,168,76,.1);padding:2.5rem 1.5rem;backdrop-filter:blur(10px)}
@@ -201,7 +201,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:fl
 .tier-card{position:relative;background:rgba(5,5,8,.6);border:1px solid rgba(201,168,76,.08);cursor:pointer;transition:all .4s cubic-bezier(.23,1,.32,1);overflow:hidden;display:flex;flex-direction:column}
 .tier-card:hover{border-color:rgba(201,168,76,.4);transform:translateY(-4px);box-shadow:0 12px 30px rgba(0,0,0,.5),0 0 30px rgba(201,168,76,.1)}
 .tier-card:hover .tier-img{transform:scale(1.05)}
-.tier-img-wrap{position:relative;width:100%;aspect-ratio:3/4;overflow:hidden;background:#000}
+.tier-img-wrap{position:relative;width:100%;aspect-ratio:2/3;overflow:hidden;background:#000}
 .tier-img-wrap::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 50%,rgba(5,5,8,.6) 100%);pointer-events:none}
 .tier-img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .6s cubic-bezier(.23,1,.32,1)}
 .tier-card:first-child .tier-img{object-position:center 55%;transform:scale(1.45)}
@@ -441,7 +441,7 @@ nav{background:linear-gradient(180deg,rgba(5,5,8,.85) 0%,rgba(5,5,8,.5) 70%,tran
   <div class="nav-right">
     <a href="#picker">Pick a Tomb</a>
     <a href="#cemetery">The Fallen</a>
-    <button class="btn-connect-big">&#x271D; Connect Wallet</button>
+    <button class="btn-connect-big" id="connect-btn" onclick="connectWallet()">&#x271D; Connect Wallet</button>
   </div>
 </nav>
 
@@ -460,9 +460,9 @@ nav{background:linear-gradient(180deg,rgba(5,5,8,.85) 0%,rgba(5,5,8,.5) 70%,tran
     <div class="gate-subtitle">Pick a tomb &middot; Bury your bags &middot; Rest in pieces</div>
     <div class="gate-latin">Connect Phantom to begin &mdash; 2,847 already buried</div>
     <div class="gate-stats">
-      <div><div class="gs-val">2,847</div><div class="gs-lbl">Buried</div></div>
-      <div><div class="gs-val">$41.2K</div><div class="gs-lbl">USDC Collected</div></div>
-      <div><div class="gs-val">$890</div><div class="gs-lbl">Weekly Prize</div></div>
+      <div><div class="gs-val" id="stat-buried">—</div><div class="gs-lbl">Buried</div></div>
+      <div><div class="gs-val" id="stat-collected">—</div><div class="gs-lbl">USDC Collected</div></div>
+      <div><div class="gs-val" id="stat-prize">—</div><div class="gs-lbl">Weekly Prize</div></div>
     </div>
   </div>
 
@@ -736,17 +736,17 @@ nav{background:linear-gradient(180deg,rgba(5,5,8,.85) 0%,rgba(5,5,8,.5) 70%,tran
         <div style="font-family:'Cinzel',serif;font-size:18px;color:var(--gold);letter-spacing:3px;text-transform:uppercase">Bury a Token</div>
         <div style="font-size:10px;color:var(--text3);margin-top:4px;letter-spacing:1px">Connect &middot; Fill &middot; Pay &middot; Rest in pieces</div>
       </div>
-      <div class="form-group"><label>Token name</label><input type="text" placeholder="$RUGPULL" class="form-input"></div>
+      <div class="form-group"><label>Token name</label><input type="text" placeholder="$RUGPULL" class="form-input" id="f-name"></div>
       <div class="form-row">
-        <div class="form-group"><label>Chain</label><select class="form-input"><option>Solana</option><option>Ethereum</option><option>BSC</option><option>Polygon</option><option>Base</option><option>Other</option></select></div>
-        <div class="form-group"><label>Time held</label><input type="text" placeholder="47 minutes" class="form-input"></div>
+        <div class="form-group"><label>Chain</label><select class="form-input" id="f-chain"><option>Solana</option><option>Ethereum</option><option>BSC</option><option>Polygon</option><option>Base</option><option>Other</option></select></div>
+        <div class="form-group"><label>Time held</label><input type="text" placeholder="47 minutes" class="form-input" id="f-time"></div>
       </div>
       <div class="form-row">
-        <div class="form-group"><label>Amount invested</label><input type="number" placeholder="4200" class="form-input"></div>
-        <div class="form-group"><label>Amount recovered</label><input type="number" placeholder="12.60" class="form-input"></div>
+        <div class="form-group"><label>Amount invested</label><input type="number" placeholder="4200" class="form-input" id="f-in"></div>
+        <div class="form-group"><label>Amount recovered</label><input type="number" placeholder="12.60" class="form-input" id="f-out"></div>
       </div>
-      <div class="form-group"><label>Cause of death</label><select class="form-input"><option>Rug pull</option><option>Honeypot</option><option>Dev abandoned</option><option>Ponzi collapse</option><option>Celebrity dump</option><option>Exchange collapse</option><option>Slow bleed</option><option>My own stupidity</option></select></div>
-      <div class="form-group"><label>Epitaph</label><textarea class="form-input" rows="3" placeholder="Write your last words..." style="resize:vertical"></textarea></div>
+      <div class="form-group"><label>Cause of death</label><select class="form-input" id="f-cod"><option>Rug pull</option><option>Honeypot</option><option>Dev abandoned</option><option>Ponzi collapse</option><option>Celebrity dump</option><option>Exchange collapse</option><option>Slow bleed</option><option>My own stupidity</option></select></div>
+      <div class="form-group"><label>Epitaph</label><textarea class="form-input" rows="3" placeholder="Write your last words..." style="resize:vertical" id="f-epitaph"></textarea></div>
       <div class="form-group"><label>Tombstone tier (USDC)</label>
         <div class="size-options">
           <button class="size-opt" onclick="selectSize(this,2)">$2</button>
@@ -769,7 +769,7 @@ nav{background:linear-gradient(180deg,rgba(5,5,8,.85) 0%,rgba(5,5,8,.5) 70%,tran
         <div class="form-split-row"><span>Prize pool (15%)</span><span id="split-pool">$3.75</span></div>
         <div class="form-split-row"><span>Buyback &amp; burn (10%)</span><span id="split-burn">$2.50</span></div>
       </div>
-      <button class="btn-pay" onclick="alert('Connect Phantom wallet to continue')">&#x271D; Connect Wallet &amp; Pay $25 USDC</button>
+      <button class="btn-pay" id="pay-btn" onclick="buyTombstone()">&#x271D; Connect Wallet &amp; Pay $25 USDC</button>
     </div>
   </div>
 </div>
@@ -819,6 +819,8 @@ nav{background:linear-gradient(180deg,rgba(5,5,8,.85) 0%,rgba(5,5,8,.5) 70%,tran
   <div class="f-orn">&loz; &bull; &loz; &bull; &loz;</div>
   <p>Degen Graveyard &mdash; MMXXVI &mdash; Built on Solana</p>
 </footer>
+
+<script src="https://unpkg.com/@solana/web3.js@1.95.3/lib/index.iife.min.js"></script>
 
 <script>
 let currentGrave={};
@@ -886,8 +888,353 @@ function selectSize(btn,amt){
   document.getElementById('split-pool').textContent='$'+(amt*0.15).toFixed(2);
   document.getElementById('split-burn').textContent='$'+(amt*0.10).toFixed(2);
   document.getElementById('size-text').textContent=sizeDesc[amt];
-  document.querySelector('.btn-pay').textContent=amt===0?'\u271D Get a Free Grave (gas only)':'\u271D Connect Wallet & Pay $'+amt+' USDC';
+  document.getElementById('pay-btn').textContent=amt===0?'\u271D Get a Free Grave (gas only)':'\u271D '+(walletConnected?'Pay':'Connect Wallet & Pay')+' $'+amt+' USDC';
   document.querySelector('.form-split-title').textContent='Your $'+amt+' will be split instantly:';
+}
+
+/* ============================================
+   PHANTOM WALLET CONNECT + USDC 5-WAY SPLIT
+   ============================================ */
+
+const CONFIG = {
+  RPC_URL: 'https://mainnet.helius-rpc.com/?api-key=1afdb607-88de-42cf-946d-221386c1e253',
+  USDC_MINT: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
+  HOLDER_WALLET:    'Bx1s5VSiwHeVqVJiG7PyK9PMwaepxM4a46yrjWmY1Hng',
+  TREASURY_WALLET:  '7hXRhfAdRi6csniqt7FwvnQ36KK1Ctkg6hH8BRPakV1s',
+  MARKETING_WALLET: 'HSqn5F5MYRy2sZVKmoe8g3i7iQL8QBN5h36CAjs1wp2v',
+  POOL_WALLET:      'HJ3i5hKQgQHhvXxUgjT5Uaf83mowZiu4L3LgusbbW5fH',
+  BUYBACK_WALLET:   '54wkusgvoMoCWyjZ687rQ4xrf91hcPtvLbdtNSqcVdKR',
+  API_URL: 'https://degen-graveyard-api-production.up.railway.app',
+};
+
+const TOKEN_PROGRAM_ID = new solanaWeb3.PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA');
+const ASSOCIATED_TOKEN_PROGRAM_ID = new solanaWeb3.PublicKey('ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL');
+const USDC_DECIMALS = 6;
+
+let walletConnected = false;
+let walletPublicKey = null;
+let connection = null;
+
+function getProvider(){
+  if(window.solana && window.solana.isPhantom) return window.solana;
+  return null;
+}
+
+function initConnection(){
+  if(!connection) connection = new solanaWeb3.Connection(CONFIG.RPC_URL, 'confirmed');
+}
+
+async function connectWallet(){
+  const provider = getProvider();
+  if(!provider){
+    if(confirm('Phantom Wallet not found. Open phantom.app to install?')){
+      window.open('https://phantom.app','_blank');
+    }
+    return;
+  }
+  try{
+    const resp = await provider.connect();
+    walletPublicKey = resp.publicKey;
+    walletConnected = true;
+    initConnection();
+    updateWalletUI();
+  }catch(err){
+    console.error('Connect failed:', err);
+  }
+}
+
+async function disconnectWallet(){
+  const provider = getProvider();
+  if(provider) await provider.disconnect();
+  walletConnected = false;
+  walletPublicKey = null;
+  updateWalletUI();
+}
+
+function updateWalletUI(){
+  const btn = document.getElementById('connect-btn');
+  if(!btn) return;
+  if(walletConnected && walletPublicKey){
+    const addr = walletPublicKey.toBase58();
+    btn.innerHTML = '\u271D ' + addr.slice(0,4) + '...' + addr.slice(-4);
+    btn.onclick = disconnectWallet;
+  }else{
+    btn.innerHTML = '\u271D Connect Wallet';
+    btn.onclick = connectWallet;
+  }
+  const payBtn = document.getElementById('pay-btn');
+  if(payBtn && selectedAmount > 0){
+    payBtn.textContent = '\u271D ' + (walletConnected ? 'Pay' : 'Connect Wallet & Pay') + ' $' + selectedAmount + ' USDC';
+  }
+}
+
+async function getAssociatedTokenAddress(mint, owner){
+  const seeds = [owner.toBuffer(), TOKEN_PROGRAM_ID.toBuffer(), mint.toBuffer()];
+  const [address] = await solanaWeb3.PublicKey.findProgramAddress(seeds, ASSOCIATED_TOKEN_PROGRAM_ID);
+  return address;
+}
+
+function createTransferInstruction(source, destination, owner, amount){
+  const data = new Uint8Array(9);
+  data[0] = 3;
+  const view = new DataView(data.buffer);
+  view.setBigUint64(1, BigInt(amount), true);
+  return new solanaWeb3.TransactionInstruction({
+    keys: [
+      { pubkey: source, isSigner: false, isWritable: true },
+      { pubkey: destination, isSigner: false, isWritable: true },
+      { pubkey: owner, isSigner: true, isWritable: false },
+    ],
+    programId: TOKEN_PROGRAM_ID,
+    data: data,
+  });
+}
+
+function getFormData(){
+  return {
+    tokenName: document.getElementById('f-name').value.trim(),
+    chain: document.getElementById('f-chain').value,
+    timeHeld: document.getElementById('f-time').value.trim(),
+    invested: document.getElementById('f-in').value,
+    recovered: document.getElementById('f-out').value,
+    cod: document.getElementById('f-cod').value,
+    epitaph: document.getElementById('f-epitaph').value.trim(),
+  };
+}
+
+function validateForm(d){
+  if(!d.tokenName) return 'Token name required';
+  if(!d.invested || parseFloat(d.invested) <= 0) return 'Amount invested required';
+  if(!d.epitaph) return 'Epitaph required';
+  if(d.tokenName.length > 32) return 'Token name too long (max 32 chars)';
+  if(d.epitaph.length > 500) return 'Epitaph too long (max 500 chars)';
+  return null;
+}
+
+async function buyTombstone(){
+  const formData = getFormData();
+  const err = validateForm(formData);
+  if(err){ alert(err); return; }
+
+  if(!walletConnected){
+    await connectWallet();
+    if(!walletConnected) return;
+  }
+
+  if(selectedAmount === 0){
+    return submitFreeTombstone(formData);
+  }
+
+  const payBtn = document.getElementById('pay-btn');
+  const originalText = payBtn.textContent;
+  payBtn.disabled = true;
+
+  try{
+    payBtn.textContent = '\u23F3 Building transaction...';
+
+    const wallets = [CONFIG.HOLDER_WALLET, CONFIG.TREASURY_WALLET, CONFIG.MARKETING_WALLET, CONFIG.POOL_WALLET, CONFIG.BUYBACK_WALLET];
+    if(wallets.some(w => w.startsWith('PASTE_'))){
+      throw new Error('Wallet addresses not configured. Edit graveyard.html CONFIG.');
+    }
+
+    const usdcMint = new solanaWeb3.PublicKey(CONFIG.USDC_MINT);
+    const buyerUsdcAta = await getAssociatedTokenAddress(usdcMint, walletPublicKey);
+
+    payBtn.textContent = '\u23F3 Checking your USDC...';
+    const buyerAtaInfo = await connection.getAccountInfo(buyerUsdcAta);
+    if(!buyerAtaInfo){
+      throw new Error('No USDC in wallet. Get USDC on Solana first.');
+    }
+
+    payBtn.textContent = '\u23F3 Calculating splits...';
+    const totalLamports = Math.round(selectedAmount * Math.pow(10, USDC_DECIMALS));
+    const splits = [
+      { wallet: CONFIG.HOLDER_WALLET,    share: 0.30 },
+      { wallet: CONFIG.TREASURY_WALLET,  share: 0.25 },
+      { wallet: CONFIG.MARKETING_WALLET, share: 0.20 },
+      { wallet: CONFIG.POOL_WALLET,      share: 0.15 },
+      { wallet: CONFIG.BUYBACK_WALLET,   share: 0.10 },
+    ];
+
+    const tx = new solanaWeb3.Transaction();
+    for(const split of splits){
+      const destPubkey = new solanaWeb3.PublicKey(split.wallet);
+      const destAta = await getAssociatedTokenAddress(usdcMint, destPubkey);
+      const amount = Math.floor(totalLamports * split.share);
+      tx.add(createTransferInstruction(buyerUsdcAta, destAta, walletPublicKey, amount));
+    }
+
+    payBtn.textContent = '\u23F3 Getting blockhash...';
+    const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash();
+    tx.recentBlockhash = blockhash;
+    tx.feePayer = walletPublicKey;
+
+    payBtn.textContent = '\u23F3 Approve in Phantom...';
+    const provider = getProvider();
+    const { signature } = await provider.signAndSendTransaction(tx);
+
+    payBtn.textContent = '\u23F3 Confirming on-chain...';
+    await connection.confirmTransaction({ signature, blockhash, lastValidBlockHeight }, 'confirmed');
+
+    payBtn.textContent = '\u23F3 Saving tombstone...';
+
+    try{
+      const resp = await fetch(CONFIG.API_URL + '/api/bury', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          signature,
+          buyer: walletPublicKey.toBase58(),
+          amount: selectedAmount,
+          tombstone: formData,
+        }),
+      });
+      if(!resp.ok) console.warn('Backend save failed but TX is on-chain:', signature);
+    }catch(backendErr){
+      console.warn('Backend call failed:', backendErr);
+    }
+
+    payBtn.textContent = '\u2713 BURIED. Rest in pieces.';
+    setTimeout(() => {
+      alert('Tombstone created!\n\nTX: ' + signature + '\n\nView on Solscan:\nhttps://solscan.io/tx/' + signature);
+      closeBury();
+      payBtn.textContent = originalText;
+      payBtn.disabled = false;
+    }, 1500);
+
+  }catch(err){
+    console.error('Payment failed:', err);
+    let msg = err.message || 'Transaction failed';
+    if(msg.includes('User rejected') || msg.includes('rejected')) msg = 'Cancelled in Phantom';
+    if(msg.toLowerCase().includes('insufficient')) msg = 'Insufficient USDC balance';
+    payBtn.textContent = '\u2716 ' + msg.slice(0, 50);
+    setTimeout(() => {
+      payBtn.textContent = originalText;
+      payBtn.disabled = false;
+    }, 4000);
+  }
+}
+
+async function submitFreeTombstone(formData){
+  const payBtn = document.getElementById('pay-btn');
+  payBtn.disabled = true;
+  payBtn.textContent = '\u23F3 Creating free tombstone...';
+  try{
+    const resp = await fetch(CONFIG.API_URL + '/api/bury-free', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        buyer: walletPublicKey ? walletPublicKey.toBase58() : null,
+        tombstone: formData,
+      }),
+    });
+    if(!resp.ok) throw new Error('Backend rejected the request');
+    payBtn.textContent = '\u2713 Free grave created';
+    setTimeout(() => {
+      closeBury();
+      payBtn.textContent = '\u271D Get a Free Grave (gas only)';
+      payBtn.disabled = false;
+    }, 1500);
+  }catch(err){
+    payBtn.textContent = '\u2716 ' + (err.message || 'Failed');
+    setTimeout(() => {
+      payBtn.textContent = '\u271D Get a Free Grave (gas only)';
+      payBtn.disabled = false;
+    }, 3000);
+  }
+}
+
+window.addEventListener('load', async () => {
+  const provider = getProvider();
+  if(provider){
+    try{
+      const resp = await provider.connect({ onlyIfTrusted: true });
+      walletPublicKey = resp.publicKey;
+      walletConnected = true;
+      initConnection();
+      updateWalletUI();
+    }catch(err){
+      // Not previously connected
+    }
+  }
+  // Start live stats fetcher
+  fetchLiveStats();
+  setInterval(fetchLiveStats, 60000); // refresh every 60s
+});
+
+/* ============================================
+   LIVE STATS — reads on-chain wallet balances
+   ============================================ */
+
+function formatMoney(n){
+  if(n >= 1000000) return (n/1000000).toFixed(1) + 'M';
+  if(n >= 1000) return (n/1000).toFixed(1) + 'K';
+  return n.toFixed(0);
+}
+function formatNumber(n){
+  return n.toLocaleString('en-US');
+}
+
+async function fetchLiveStats(){
+  // Try backend first for the buried count
+  let buriedCount = null;
+  try{
+    const resp = await fetch(CONFIG.API_URL + '/api/stats');
+    if(resp.ok){
+      const data = await resp.json();
+      if(data.totalBuried !== undefined) buriedCount = data.totalBuried;
+      if(data.totalCollected !== undefined){
+        document.getElementById('stat-collected').textContent = '$' + formatMoney(data.totalCollected);
+      }
+      if(data.weeklyPrize !== undefined){
+        document.getElementById('stat-prize').textContent = '$' + formatMoney(data.weeklyPrize);
+      }
+      if(buriedCount !== null){
+        document.getElementById('stat-buried').textContent = formatNumber(buriedCount);
+      }
+      return; // Backend served all stats, done
+    }
+  }catch(e){
+    console.warn('Backend stats unavailable, falling back to on-chain reading');
+  }
+
+  // Fallback: read on-chain wallet balances directly
+  const wallets = [CONFIG.HOLDER_WALLET, CONFIG.TREASURY_WALLET, CONFIG.MARKETING_WALLET, CONFIG.POOL_WALLET, CONFIG.BUYBACK_WALLET];
+  if(wallets.some(w => w.startsWith('PASTE_'))){
+    document.getElementById('stat-buried').textContent = '0';
+    document.getElementById('stat-collected').textContent = '$0';
+    document.getElementById('stat-prize').textContent = '$0';
+    return;
+  }
+
+  try{
+    initConnection();
+    const usdcMint = new solanaWeb3.PublicKey(CONFIG.USDC_MINT);
+    let totalCollected = 0;
+    let weeklyPrize = 0;
+    for(const walletAddr of wallets){
+      try{
+        const owner = new solanaWeb3.PublicKey(walletAddr);
+        const ata = await getAssociatedTokenAddress(usdcMint, owner);
+        const balance = await connection.getTokenAccountBalance(ata);
+        const amount = balance.value.uiAmount || 0;
+        totalCollected += amount;
+        if(walletAddr === CONFIG.POOL_WALLET) weeklyPrize = amount;
+      }catch(e){
+        // ATA doesn't exist yet, count as 0
+      }
+    }
+    document.getElementById('stat-collected').textContent = '$' + formatMoney(totalCollected);
+    document.getElementById('stat-prize').textContent = '$' + formatMoney(weeklyPrize);
+    if(buriedCount === null){
+      document.getElementById('stat-buried').textContent = '0';
+    }
+  }catch(e){
+    console.error('Live stats fetch failed:', e);
+    document.getElementById('stat-buried').textContent = '—';
+    document.getElementById('stat-collected').textContent = '—';
+    document.getElementById('stat-prize').textContent = '—';
+  }
 }
 </script>
 

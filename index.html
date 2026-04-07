@@ -472,9 +472,9 @@ nav{background:linear-gradient(180deg,rgba(5,5,8,.85) 0%,rgba(5,5,8,.5) 70%,tran
     <div class="gate-subtitle">Where Rugged Tokens Find Eternal Rest</div>
     <div class="gate-latin">Requiescat in pieces &mdash; 2,847 interred</div>
     <div class="gate-stats">
-      <div><div class="gs-val">2,847</div><div class="gs-lbl">Buried</div></div>
-      <div><div class="gs-val">$41.2K</div><div class="gs-lbl">USDC Collected</div></div>
-      <div><div class="gs-val">$890</div><div class="gs-lbl">Weekly Prize</div></div>
+      <div><div class="gs-val" id="stat-buried">—</div><div class="gs-lbl">Buried</div></div>
+      <div><div class="gs-val" id="stat-collected">—</div><div class="gs-lbl">USDC Collected</div></div>
+      <div><div class="gs-val" id="stat-prize">—</div><div class="gs-lbl">Weekly Prize</div></div>
     </div>
   </div>
 
@@ -594,6 +594,8 @@ nav{background:linear-gradient(180deg,rgba(5,5,8,.85) 0%,rgba(5,5,8,.5) 70%,tran
   <p>Degen Graveyard &mdash; MMXXVI &mdash; Built on Solana</p>
 </footer>
 
+<script src="https://unpkg.com/@solana/web3.js@1.95.3/lib/index.iife.min.js"></script>
+
 <script>
 // Smooth scroll for nav anchors
 document.querySelectorAll('a[href^="#"]').forEach(a=>{
@@ -601,6 +603,110 @@ document.querySelectorAll('a[href^="#"]').forEach(a=>{
     const target=document.querySelector(a.getAttribute('href'));
     if(target){e.preventDefault();target.scrollIntoView({behavior:'smooth',block:'start'})}
   });
+});
+
+/* ============================================
+   LIVE STATS — same as graveyard page
+   ============================================ */
+
+const CONFIG = {
+  RPC_URL: 'https://mainnet.helius-rpc.com/?api-key=1afdb607-88de-42cf-946d-221386c1e253',
+  USDC_MINT: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
+  HOLDER_WALLET:    'Bx1s5VSiwHeVqVJiG7PyK9PMwaepxM4a46yrjWmY1Hng',
+  TREASURY_WALLET:  '7hXRhfAdRi6csniqt7FwvnQ36KK1Ctkg6hH8BRPakV1s',
+  MARKETING_WALLET: 'HSqn5F5MYRy2sZVKmoe8g3i7iQL8QBN5h36CAjs1wp2v',
+  POOL_WALLET:      'HJ3i5hKQgQHhvXxUgjT5Uaf83mowZiu4L3LgusbbW5fH',
+  BUYBACK_WALLET:   '54wkusgvoMoCWyjZ687rQ4xrf91hcPtvLbdtNSqcVdKR',
+  API_URL: 'https://degen-graveyard-api-production.up.railway.app',
+};
+
+const TOKEN_PROGRAM_ID = new solanaWeb3.PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA');
+const ASSOCIATED_TOKEN_PROGRAM_ID = new solanaWeb3.PublicKey('ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL');
+let connection = null;
+
+async function getAssociatedTokenAddress(mint, owner){
+  const seeds = [owner.toBuffer(), TOKEN_PROGRAM_ID.toBuffer(), mint.toBuffer()];
+  const [address] = await solanaWeb3.PublicKey.findProgramAddress(seeds, ASSOCIATED_TOKEN_PROGRAM_ID);
+  return address;
+}
+
+function formatMoney(n){
+  if(n >= 1000000) return (n/1000000).toFixed(1) + 'M';
+  if(n >= 1000) return (n/1000).toFixed(1) + 'K';
+  return n.toFixed(0);
+}
+function formatNumber(n){
+  return n.toLocaleString('en-US');
+}
+
+async function fetchLiveStats(){
+  let buriedCount = null;
+  try{
+    const resp = await fetch(CONFIG.API_URL + '/api/stats');
+    if(resp.ok){
+      const data = await resp.json();
+      if(data.totalBuried !== undefined) buriedCount = data.totalBuried;
+      if(data.totalCollected !== undefined){
+        document.getElementById('stat-collected').textContent = '$' + formatMoney(data.totalCollected);
+      }
+      if(data.weeklyPrize !== undefined){
+        document.getElementById('stat-prize').textContent = '$' + formatMoney(data.weeklyPrize);
+      }
+      if(buriedCount !== null){
+        document.getElementById('stat-buried').textContent = formatNumber(buriedCount);
+      }
+      // Also update pool amount on the landing if backend provides it
+      if(data.weeklyPrize !== undefined){
+        const poolEl = document.querySelector('.pool-amount');
+        if(poolEl) poolEl.textContent = '$' + data.weeklyPrize.toFixed(2);
+      }
+      return;
+    }
+  }catch(e){
+    console.warn('Backend stats unavailable, falling back to on-chain reading');
+  }
+
+  const wallets = [CONFIG.HOLDER_WALLET, CONFIG.TREASURY_WALLET, CONFIG.MARKETING_WALLET, CONFIG.POOL_WALLET, CONFIG.BUYBACK_WALLET];
+  if(wallets.some(w => w.startsWith('PASTE_'))){
+    document.getElementById('stat-buried').textContent = '0';
+    document.getElementById('stat-collected').textContent = '$0';
+    document.getElementById('stat-prize').textContent = '$0';
+    return;
+  }
+
+  try{
+    if(!connection) connection = new solanaWeb3.Connection(CONFIG.RPC_URL, 'confirmed');
+    const usdcMint = new solanaWeb3.PublicKey(CONFIG.USDC_MINT);
+    let totalCollected = 0;
+    let weeklyPrize = 0;
+    for(const walletAddr of wallets){
+      try{
+        const owner = new solanaWeb3.PublicKey(walletAddr);
+        const ata = await getAssociatedTokenAddress(usdcMint, owner);
+        const balance = await connection.getTokenAccountBalance(ata);
+        const amount = balance.value.uiAmount || 0;
+        totalCollected += amount;
+        if(walletAddr === CONFIG.POOL_WALLET) weeklyPrize = amount;
+      }catch(e){
+        // ATA doesn't exist yet, count as 0
+      }
+    }
+    document.getElementById('stat-collected').textContent = '$' + formatMoney(totalCollected);
+    document.getElementById('stat-prize').textContent = '$' + formatMoney(weeklyPrize);
+    if(buriedCount === null){
+      document.getElementById('stat-buried').textContent = '0';
+    }
+    // Update pool amount too
+    const poolEl = document.querySelector('.pool-amount');
+    if(poolEl) poolEl.textContent = '$' + weeklyPrize.toFixed(2);
+  }catch(e){
+    console.error('Live stats fetch failed:', e);
+  }
+}
+
+window.addEventListener('load', () => {
+  fetchLiveStats();
+  setInterval(fetchLiveStats, 60000);
 });
 </script>
 
