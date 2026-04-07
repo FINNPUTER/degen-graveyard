@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Graveyard — Pick Your Tomb</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cinzel+Decorative:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+--bg:#050508;--bg2:#0a0a10;--bg3:#0e0e16;
+--gold:#c9a84c;--gold2:#a8872e;--gold3:#8b6d1e;--gold-bright:#e6c55a;
+--gold-dim:rgba(201,168,76,.3);
+--text:#d8d0c0;--text2:#8a8070;--text3:#5a5448;--text4:#3a3530;
+--red:#a03020;--red2:#c04030;
+--iron:#2a2828;
+}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;overflow-x:hidden}
+
+@keyframes fogDrift{0%{transform:translateX(0)}100%{transform:translateX(-33.33%)}}
+@keyframes flicker{0%,100%{opacity:1}30%{opacity:.85}60%{opacity:.95}}
+@keyframes ravenFloat{0%,100%{transform:translate(0,0) rotate(0deg)}25%{transform:translate(3px,-2px) rotate(.5deg)}75%{transform:translate(-2px,1px) rotate(-.5deg)}}
+@keyframes chainSwing{0%,100%{transform:rotate(-1deg)}50%{transform:rotate(1deg)}}
+@keyframes fadeUp{0%{opacity:0;transform:translateY(20px)}100%{opacity:1;transform:translateY(0)}}
+@keyframes pulseGold{0%,100%{box-shadow:0 0 30px rgba(201,168,76,.06)}50%{box-shadow:0 0 50px rgba(201,168,76,.12)}}
+
+.sky{position:fixed;top:0;left:0;right:0;height:100vh;background:radial-gradient(ellipse 120% 80% at 50% 10%,#0c0c18 0%,#080810 40%,#050508 100%);pointer-events:none;z-index:0}
+.fog{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:3}
+.fog-layer{position:absolute;width:300%;height:100%;opacity:.06}
+.fog-layer:nth-child(1){background:repeating-linear-gradient(90deg,transparent 0%,rgba(200,180,140,.04) 8%,transparent 16%);animation:fogDrift 40s linear infinite}
+.fog-layer:nth-child(2){background:repeating-linear-gradient(90deg,transparent 0%,rgba(180,160,120,.03) 12%,transparent 24%);animation:fogDrift 55s linear infinite reverse;top:50%}
+.vignette{position:fixed;top:0;left:0;right:0;bottom:0;background:radial-gradient(ellipse 90% 80% at 50% 40%,transparent 0%,rgba(5,5,8,.3) 70%,rgba(5,5,8,.7) 100%);pointer-events:none;z-index:4}
+.grain{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:5;opacity:.03;mix-blend-mode:overlay;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;background:linear-gradient(180deg,rgba(5,5,8,.95) 0%,transparent 100%);backdrop-filter:blur(8px)}
+.nav-logo{font-family:'Cinzel Decorative',serif;font-size:15px;color:var(--gold);letter-spacing:4px;text-transform:uppercase;text-shadow:0 0 20px rgba(201,168,76,.2);text-decoration:none;transition:color .3s}
+.nav-logo:hover{color:var(--gold-bright)}
+.nav-right{display:flex;gap:1.5rem;align-items:center}
+.nav-right a{color:var(--text3);font-size:11px;text-decoration:none;letter-spacing:2px;text-transform:uppercase;transition:color .4s}
+.nav-right a:hover{color:var(--gold)}
+.btn-bury{background:var(--gold);border:none;color:var(--bg);padding:8px 20px;font-family:'Cinzel',serif;font-size:10px;letter-spacing:3px;text-transform:uppercase;cursor:pointer;font-weight:700;transition:all .3s;text-decoration:none;display:inline-block}
+.btn-bury:hover{background:var(--gold-bright);box-shadow:0 0 20px rgba(201,168,76,.3)}
+.btn-connect{background:transparent;border:1px solid var(--gold-dim);color:var(--gold2);padding:8px 20px;font-family:'Cinzel',serif;font-size:10px;letter-spacing:3px;text-transform:uppercase;cursor:pointer;transition:all .3s}
+.btn-connect:hover{border-color:var(--gold);color:var(--gold)}
+.btn-connect-big{background:linear-gradient(135deg,var(--gold),var(--gold-bright));border:none;color:var(--bg);padding:10px 24px;font-family:'Cinzel',serif;font-size:11px;letter-spacing:3px;text-transform:uppercase;cursor:pointer;font-weight:700;transition:all .3s;box-shadow:0 0 20px rgba(201,168,76,.2)}
+.btn-connect-big:hover{box-shadow:0 0 30px rgba(201,168,76,.4),0 4px 16px rgba(201,168,76,.2);transform:translateY(-1px)}
+
+.page{position:relative;z-index:10;padding-top:70px}
+
+.iron-gate{position:relative;text-align:center;padding:3rem 2rem 2rem;margin-bottom:1rem}
+.gate-frame{position:absolute;top:0;left:50%;transform:translateX(-50%);width:min(90vw,700px);height:100%;pointer-events:none}
+.gate-pillar{position:absolute;top:0;width:6px;height:100%}
+.gate-pillar.l{left:0;background:linear-gradient(180deg,var(--iron),#1e1c1c,transparent)}
+.gate-pillar.r{right:0;background:linear-gradient(180deg,var(--iron),#1e1c1c,transparent)}
+.gate-pillar .finial{position:absolute;top:-12px;left:50%;transform:translateX(-50%);width:14px;height:18px;background:var(--gold);clip-path:polygon(40% 0%,60% 0%,60% 28%,100% 28%,100% 48%,60% 48%,60% 100%,40% 100%,40% 48%,0% 48%,0% 28%,40% 28%);box-shadow:0 0 12px rgba(201,168,76,.4);filter:drop-shadow(0 0 6px rgba(201,168,76,.5))}
+.gate-arch-bar{position:absolute;top:12px;left:6px;right:6px;height:2px;background:var(--iron)}
+.gate-chains{position:absolute;bottom:20%;width:20px;animation:chainSwing 4s ease-in-out infinite}
+.gate-chains.l{left:8px}.gate-chains.r{right:8px}
+.chain-link{width:8px;height:14px;border:1.5px solid var(--iron);border-radius:3px;margin:-4px auto}
+
+.gate-orn{font-size:10px;color:var(--gold3);letter-spacing:8px;margin-bottom:6px}
+.gate-title{font-family:'Cinzel Decorative',serif;font-size:clamp(36px,6vw,64px);color:var(--gold);letter-spacing:8px;text-transform:uppercase;line-height:1;margin-bottom:10px;text-shadow:0 0 60px rgba(201,168,76,.2),0 2px 4px rgba(0,0,0,.6)}
+.gate-subtitle{font-family:'Cinzel',serif;font-size:clamp(11px,1.5vw,14px);color:var(--text3);letter-spacing:6px;text-transform:uppercase}
+.gate-latin{font-family:'Cinzel',serif;font-size:10px;color:var(--text4);letter-spacing:4px;font-style:italic;margin-top:8px}
+.gate-stats{display:flex;justify-content:center;gap:clamp(1.5rem,4vw,3.5rem);margin-top:2rem}
+.gs-val{font-family:'Cinzel',serif;font-size:clamp(20px,2.8vw,28px);color:var(--gold);text-shadow:0 0 20px rgba(201,168,76,.15)}
+.gs-lbl{font-size:9px;color:var(--text4);letter-spacing:2px;text-transform:uppercase;margin-top:3px}
+
+.how-it-works{position:relative;z-index:20;max-width:780px;margin:0 auto 1.5rem;padding:0 1.5rem}
+.hiw-inner{background:rgba(10,10,16,.85);border:1px solid rgba(201,168,76,.1);padding:1.5rem;backdrop-filter:blur(10px);position:relative}
+.hiw-inner::before,.hiw-inner::after{content:'';position:absolute;top:-1px;width:20px;height:3px;background:var(--gold3)}
+.hiw-inner::before{left:-1px}.hiw-inner::after{right:-1px}
+.hiw-title{font-family:'Cinzel',serif;font-size:12px;color:var(--gold2);letter-spacing:4px;text-transform:uppercase;text-align:center;margin-bottom:1.25rem}
+.hiw-steps{display:flex;align-items:flex-start;gap:8px;justify-content:center}
+.hiw-step{flex:1;text-align:center;max-width:220px}
+.hiw-num{font-family:'Cinzel Decorative',serif;font-size:20px;color:var(--gold3);margin-bottom:8px}
+.hiw-head{font-family:'Cinzel',serif;font-size:12px;color:var(--gold);letter-spacing:2px;text-transform:uppercase;margin-bottom:6px}
+.hiw-desc{font-size:11px;color:var(--text3);line-height:1.6}
+.hiw-arrow{font-size:16px;color:var(--gold3);margin-top:24px;opacity:.4}
+@media(max-width:600px){.hiw-steps{flex-direction:column;align-items:center}.hiw-arrow{transform:rotate(90deg);margin:4px 0}}
+
+.pool-section{position:relative;z-index:20;max-width:780px;margin:0 auto 1.5rem;padding:0 1.5rem}
+.pool-inner{background:rgba(10,10,16,.85);border:1px solid rgba(201,168,76,.15);padding:1.25rem 1.5rem;backdrop-filter:blur(10px);display:flex;justify-content:space-between;align-items:center;gap:1.5rem;flex-wrap:wrap;position:relative}
+.pool-inner::before,.pool-inner::after{content:'';position:absolute;top:-1px;width:20px;height:3px;background:var(--gold3)}
+.pool-inner::before{left:-1px}.pool-inner::after{right:-1px}
+.pool-label{font-family:'Cinzel',serif;font-size:11px;color:var(--gold2);letter-spacing:2px;text-transform:uppercase;margin-bottom:6px}
+.pool-amount{font-family:'Cinzel',serif;font-size:clamp(28px,4vw,38px);color:var(--gold);text-shadow:0 0 20px rgba(201,168,76,.2);margin-bottom:4px}
+.pool-sub{font-size:10px;color:var(--text3);margin-bottom:6px}
+.pool-timer{font-family:'DM Mono',monospace;font-size:11px;color:var(--text2)}
+.pool-countdown{color:var(--gold2)}
+.pool-split-row{display:flex;align-items:center;gap:10px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.025);min-width:200px}
+.pool-place{font-family:'Cinzel',serif;font-size:12px;color:var(--gold);width:32px}
+.pool-pct{font-size:11px;color:var(--text3);width:36px;text-align:center}
+.pool-val{font-family:'DM Mono',monospace;font-size:13px;color:var(--text);flex:1;text-align:right}
+.pool-breakdown{background:rgba(10,10,16,.6);border:1px solid rgba(201,168,76,.08);border-top:none;padding:1rem 1.5rem;margin-top:-1px}
+.pool-breakdown-title{font-family:'Cinzel',serif;font-size:10px;color:var(--text3);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;text-align:center}
+.pool-bars{display:flex;flex-direction:column;gap:6px}
+.pool-bar{position:relative;height:22px;background:rgba(255,255,255,.02);overflow:hidden}
+.pool-bar-fill{height:100%;opacity:.5}
+.pool-bar-label{position:absolute;top:0;left:0;right:0;height:100%;display:flex;justify-content:space-between;align-items:center;padding:0 10px;font-size:10px}
+.pool-bar-label span:first-child{color:var(--text2);font-family:'Cinzel',serif;letter-spacing:1px}
+.pool-bar-label span:last-child{color:var(--text);font-family:'DM Mono',monospace}
+
+/* THE GRAVEYARD - REAL TOMBSTONE IMAGES */
+.cemetery{position:relative;z-index:15;max-width:1400px;margin:3rem auto;padding:0 1.5rem 4rem}
+.cemetery-title{text-align:center;margin-bottom:1rem}
+.cemetery-title-text{font-family:'Cinzel Decorative',serif;font-size:clamp(22px,3vw,32px);color:var(--gold);letter-spacing:4px;text-transform:uppercase;margin-bottom:6px;text-shadow:0 0 30px rgba(201,168,76,.15)}
+.cemetery-title-sub{font-family:'Cinzel',serif;font-size:11px;color:var(--text3);letter-spacing:3px;text-transform:uppercase}
+
+.graves{display:grid;grid-template-columns:repeat(12,1fr);gap:14px;margin-top:2rem}
+
+.grave{position:relative;cursor:pointer;transition:transform .5s cubic-bezier(.23,1,.32,1);animation:fadeUp .8s ease-out both;overflow:hidden;background:#000}
+.grave:hover{transform:translateY(-6px) scale(1.01);z-index:50}
+.grave:hover .grave-overlay{opacity:1}
+.grave:hover .grave-glow{opacity:1}
+.grave:hover .grave-img{filter:brightness(1.1)}
+
+.grave-img{width:100%;height:100%;object-fit:cover;display:block;transition:filter .5s;position:relative;z-index:1}
+.grave-glow{position:absolute;top:0;left:0;right:0;bottom:0;box-shadow:inset 0 0 60px rgba(201,168,76,.15);opacity:0;transition:opacity .5s;pointer-events:none;z-index:2}
+
+.grave-overlay{position:absolute;left:0;right:0;bottom:0;padding:14px 16px 16px;background:linear-gradient(180deg,transparent 0%,rgba(5,5,8,.4) 30%,rgba(5,5,8,.92) 80%,rgba(5,5,8,.98) 100%);opacity:.92;transition:opacity .5s;z-index:3;pointer-events:none}
+
+.grave-name{font-family:'Cinzel',serif;font-weight:700;color:var(--gold);text-align:center;letter-spacing:1.5px;text-shadow:0 0 10px rgba(0,0,0,.9),0 0 20px rgba(201,168,76,.3);margin-bottom:2px;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.grave-chain{font-size:9px;color:var(--text3);text-align:center;letter-spacing:1px;margin-bottom:6px;text-transform:uppercase}
+.grave-loss{font-family:'DM Mono',monospace;color:var(--red2);text-align:center;font-weight:500;text-shadow:0 0 10px rgba(0,0,0,.9),0 0 15px rgba(192,64,48,.3);line-height:1.1;margin-bottom:2px}
+.grave-pct{font-size:9px;color:var(--red);opacity:.7;text-align:center;margin-bottom:6px}
+.grave-orn{font-size:7px;color:rgba(201,168,76,.3);text-align:center;letter-spacing:2px;margin-bottom:4px}
+.grave-epitaph{font-size:9px;color:var(--text2);font-style:italic;text-align:center;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;text-shadow:0 0 8px rgba(0,0,0,.9);padding:0 4px}
+.grave-votes{font-size:9px;color:var(--gold3);text-align:center;margin-top:6px;letter-spacing:1px}
+.grave-spent{position:absolute;top:8px;right:8px;background:rgba(5,5,8,.85);border:1px solid rgba(201,168,76,.2);color:var(--gold);font-family:'DM Mono',monospace;font-size:9px;padding:3px 7px;letter-spacing:.5px;z-index:4;backdrop-filter:blur(4px)}
+
+/* Tier sizes - grid spans */
+.grave.t-free{grid-column:span 1;aspect-ratio:2/3}
+.grave.t-2{grid-column:span 2;aspect-ratio:2/3}
+.grave.t-5{grid-column:span 2;aspect-ratio:2/3}
+.grave.t-10{grid-column:span 3;aspect-ratio:2/3}
+.grave.t-25{grid-column:span 3;aspect-ratio:2/3}
+.grave.t-50{grid-column:span 4;aspect-ratio:3/4}
+.grave.t-100{grid-column:span 4;aspect-ratio:3/4}
+.grave.t-250{grid-column:span 5;aspect-ratio:3/4}
+.grave.t-1000{grid-column:span 6;aspect-ratio:3/4}
+
+.grave.t-free .grave-name{font-size:9px}
+.grave.t-free .grave-chain,.grave.t-free .grave-pct,.grave.t-free .grave-orn,.grave.t-free .grave-epitaph,.grave.t-free .grave-votes{display:none}
+.grave.t-free .grave-loss{font-size:10px}
+.grave.t-free .grave-overlay{padding:8px}
+
+.grave.t-2 .grave-name{font-size:11px}
+.grave.t-2 .grave-loss{font-size:13px}
+.grave.t-2 .grave-orn,.grave.t-2 .grave-epitaph{display:none}
+.grave.t-2 .grave-overlay{padding:10px 12px}
+
+.grave.t-5 .grave-name{font-size:12px}
+.grave.t-5 .grave-loss{font-size:14px}
+.grave.t-5 .grave-orn{display:none}
+.grave.t-5 .grave-epitaph{font-size:8px;-webkit-line-clamp:1}
+.grave.t-5 .grave-overlay{padding:10px 12px}
+
+.grave.t-10 .grave-name{font-size:14px;color:var(--gold-bright)}
+.grave.t-10 .grave-loss{font-size:16px}
+
+.grave.t-25 .grave-name{font-size:15px;color:var(--gold-bright)}
+.grave.t-25 .grave-loss{font-size:18px}
+.grave.t-25{animation:fadeUp .8s ease-out both,pulseGold 5s ease-in-out infinite 1s}
+
+.grave.t-50 .grave-name{font-size:17px;color:var(--gold-bright);letter-spacing:2px}
+.grave.t-50 .grave-loss{font-size:20px}
+.grave.t-50 .grave-overlay{padding:18px 20px 22px}
+.grave.t-50{animation:fadeUp .8s ease-out both,pulseGold 4.5s ease-in-out infinite}
+
+.grave.t-100 .grave-name{font-size:19px;color:var(--gold-bright);letter-spacing:2px;text-shadow:0 0 12px rgba(0,0,0,.9),0 0 25px rgba(201,168,76,.4)}
+.grave.t-100 .grave-loss{font-size:22px}
+.grave.t-100 .grave-overlay{padding:20px 22px 24px}
+.grave.t-100{animation:fadeUp .8s ease-out both,pulseGold 4s ease-in-out infinite}
+
+.grave.t-250 .grave-name{font-size:22px;color:var(--gold-bright);letter-spacing:3px;text-shadow:0 0 15px rgba(0,0,0,.9),0 0 30px rgba(201,168,76,.5)}
+.grave.t-250 .grave-loss{font-size:26px;text-shadow:0 0 12px rgba(0,0,0,.9),0 0 20px rgba(192,64,48,.4)}
+.grave.t-250 .grave-overlay{padding:24px 26px 28px}
+.grave.t-250{animation:fadeUp .8s ease-out both,pulseGold 3.5s ease-in-out infinite}
+.grave.t-250 .grave-glow{box-shadow:inset 0 0 80px rgba(201,168,76,.2)}
+
+@keyframes cathedralGlow{0%,100%{box-shadow:0 0 60px rgba(201,168,76,.15),0 0 120px rgba(201,168,76,.08)}50%{box-shadow:0 0 100px rgba(201,168,76,.25),0 0 200px rgba(201,168,76,.12)}}
+.grave.t-1000 .grave-name{font-size:26px;color:var(--gold-bright);letter-spacing:4px;text-shadow:0 0 20px rgba(0,0,0,.9),0 0 40px rgba(201,168,76,.6),0 0 60px rgba(201,168,76,.3)}
+.grave.t-1000 .grave-loss{font-size:30px;text-shadow:0 0 15px rgba(0,0,0,.9),0 0 25px rgba(192,64,48,.5)}
+.grave.t-1000 .grave-overlay{padding:28px 30px 32px}
+.grave.t-1000 .grave-spent{font-size:11px;padding:5px 10px;border-color:rgba(201,168,76,.4);background:rgba(5,5,8,.92)}
+.grave.t-1000{animation:fadeUp .8s ease-out both,cathedralGlow 4s ease-in-out infinite;border:1px solid rgba(201,168,76,.15)}
+.grave.t-1000 .grave-glow{box-shadow:inset 0 0 120px rgba(201,168,76,.25)}
+.grave.t-1000::before{content:'';position:absolute;top:-30px;left:-30px;right:-30px;bottom:-30px;background:radial-gradient(ellipse at 50% 50%,rgba(201,168,76,.04) 0%,transparent 70%);pointer-events:none;z-index:-1;animation:cathedralGlow 4s ease-in-out infinite}
+.grave.t-1000 .grave-orn{color:rgba(201,168,76,.5);font-size:9px}
+.grave.t-1000 .grave-epitaph{font-size:11px;color:var(--text)}
+
+.winner-badge{position:absolute;top:-10px;left:50%;transform:translateX(-50%);z-index:10;background:linear-gradient(135deg,var(--gold2),var(--gold-bright),var(--gold2));color:var(--bg);font-family:'Cinzel',serif;font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:4px 14px;white-space:nowrap;box-shadow:0 4px 16px rgba(201,168,76,.3),0 0 20px rgba(201,168,76,.2)}
+
+.tier-picker{position:relative;z-index:20;max-width:1300px;margin:3rem auto 0;padding:3rem 1.5rem 2rem}
+.picker-inner{background:rgba(10,10,16,.85);border:1px solid rgba(201,168,76,.1);padding:2.5rem 1.5rem;backdrop-filter:blur(10px)}
+.picker-orn{font-size:8px;color:rgba(201,168,76,.15);letter-spacing:4px;margin-bottom:6px;text-align:center}
+.picker-title{font-family:'Cinzel Decorative',serif;font-size:clamp(22px,3vw,32px);color:var(--gold);letter-spacing:4px;text-transform:uppercase;text-align:center;margin-bottom:6px;text-shadow:0 0 30px rgba(201,168,76,.15)}
+.picker-sub{font-family:'Cinzel',serif;font-size:11px;color:var(--text3);letter-spacing:3px;text-transform:uppercase;text-align:center;margin-bottom:2rem}
+.picker-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;max-width:1200px;margin:0 auto}
+.tier-card{position:relative;background:rgba(5,5,8,.6);border:1px solid rgba(201,168,76,.08);cursor:pointer;transition:all .4s cubic-bezier(.23,1,.32,1);overflow:hidden;display:flex;flex-direction:column}
+.tier-card:hover{border-color:rgba(201,168,76,.4);transform:translateY(-4px);box-shadow:0 12px 30px rgba(0,0,0,.5),0 0 30px rgba(201,168,76,.1)}
+.tier-card:hover .tier-img{transform:scale(1.05)}
+.tier-img-wrap{position:relative;width:100%;aspect-ratio:3/4;overflow:hidden;background:#000}
+.tier-img-wrap::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 50%,rgba(5,5,8,.6) 100%);pointer-events:none}
+.tier-img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .6s cubic-bezier(.23,1,.32,1)}
+.tier-card:first-child .tier-img{object-position:center 55%;transform:scale(1.45)}
+.tier-card:first-child:hover .tier-img{transform:scale(1.55)}
+.tier-price{font-family:'Cinzel Decorative',serif;font-size:22px;color:var(--gold);text-align:center;padding:12px 8px 4px;letter-spacing:1px;text-shadow:0 0 20px rgba(201,168,76,.2)}
+.tier-name{font-family:'Cinzel',serif;font-size:11px;color:var(--gold-bright);letter-spacing:2px;text-align:center;text-transform:uppercase;padding:0 8px}
+.tier-desc{font-size:10px;color:var(--text3);text-align:center;padding:4px 8px 14px;font-style:italic;letter-spacing:.5px}
+.tier-flag{position:absolute;top:8px;right:8px;background:rgba(201,168,76,.95);color:var(--bg);font-family:'Cinzel',serif;font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:3px 8px;z-index:10;backdrop-filter:blur(4px)}
+.tier-card.popular{border-color:rgba(201,168,76,.25)}
+.tier-card.popular .tier-img-wrap{box-shadow:inset 0 0 40px rgba(201,168,76,.08)}
+.tier-card.whale{border-color:rgba(201,168,76,.4);background:linear-gradient(180deg,rgba(20,15,8,.7),rgba(5,5,8,.6));box-shadow:0 0 40px rgba(201,168,76,.08)}
+.tier-card.whale .tier-price{font-size:24px;color:var(--gold-bright);text-shadow:0 0 25px rgba(201,168,76,.4)}
+.tier-card.whale .tier-img-wrap{box-shadow:inset 0 0 60px rgba(201,168,76,.15)}
+.tier-flag.whale-flag{background:linear-gradient(135deg,var(--gold-bright),var(--gold));box-shadow:0 0 15px rgba(201,168,76,.4)}
+@media(max-width:700px){.picker-grid{grid-template-columns:repeat(2,1fr);gap:10px}}
+
+@media(max-width:1100px){.graves{grid-template-columns:repeat(8,1fr)}.grave.t-free{grid-column:span 2}.grave.t-50,.grave.t-100,.grave.t-250{grid-column:span 4}.grave.t-1000{grid-column:span 8}}
+@media(max-width:700px){.graves{grid-template-columns:repeat(6,1fr);gap:10px}.grave.t-free,.grave.t-2,.grave.t-5{grid-column:span 3}.grave.t-10,.grave.t-25{grid-column:span 6}.grave.t-50,.grave.t-100,.grave.t-250,.grave.t-1000{grid-column:span 6}}
+
+/* Sections */
+.section{position:relative;z-index:20;max-width:780px;margin:0 auto;padding:3rem 1.5rem 1rem}
+.section-inner{background:rgba(10,10,16,.85);border:1px solid rgba(201,168,76,.1);padding:2rem 1.5rem;backdrop-filter:blur(10px)}
+.section-orn{font-size:8px;color:rgba(201,168,76,.15);letter-spacing:4px;margin-bottom:6px;text-align:center}
+.section-title{font-family:'Cinzel Decorative',serif;font-size:clamp(20px,3vw,30px);color:var(--gold);letter-spacing:4px;text-transform:uppercase;text-align:center;margin-bottom:4px}
+.section-sub{font-family:'Cinzel',serif;font-size:11px;color:var(--text3);letter-spacing:3px;text-transform:uppercase;text-align:center;margin-bottom:1.5rem}
+
+.token-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:rgba(201,168,76,.06)}
+.token-box{background:rgba(10,10,16,.9);padding:1.25rem;transition:background .3s}
+.token-box:hover{background:rgba(20,20,30,.9)}
+.token-icon{font-size:16px;color:var(--gold3);margin-bottom:6px}
+.token-label{font-family:'Cinzel',serif;font-size:12px;color:var(--gold);letter-spacing:2px;text-transform:uppercase;margin-bottom:6px}
+.token-desc{font-size:11px;color:var(--text3);line-height:1.65}
+@media(max-width:500px){.token-grid{grid-template-columns:1fr}}
+
+.wallet-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:1rem}
+.wallet-card{background:rgba(10,10,16,.9);border:1px solid rgba(201,168,76,.06);padding:1rem .75rem;text-align:center;transition:border-color .3s}
+.wallet-card:hover{border-color:rgba(201,168,76,.15)}
+.wallet-pct{font-family:'Cinzel Decorative',serif;font-size:24px;color:var(--gold);margin-bottom:4px}
+.wallet-name{font-family:'Cinzel',serif;font-size:9px;color:var(--gold2);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;line-height:1.3}
+.wallet-addr{font-family:'DM Mono',monospace;font-size:9px;color:var(--text2);margin-bottom:8px;padding:3px 6px;background:rgba(255,255,255,.02);display:inline-block}
+.wallet-desc{font-size:9px;color:var(--text3);line-height:1.5}
+.wallet-note{text-align:center;font-size:10px;color:var(--text4);font-style:italic;letter-spacing:1px}
+@media(max-width:900px){.wallet-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:500px){.wallet-grid{grid-template-columns:1fr}}
+
+/* Modal */
+.modal-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.85);z-index:300;justify-content:center;align-items:center;backdrop-filter:blur(8px);padding:1rem}
+.modal-overlay.open{display:flex}
+.modal{background:linear-gradient(180deg,var(--bg3),var(--bg2));border:1px solid rgba(201,168,76,.2);max-width:560px;width:100%;max-height:92vh;overflow-y:auto;position:relative;box-shadow:0 20px 60px rgba(0,0,0,.6),0 0 80px rgba(201,168,76,.05)}
+.modal::before,.modal::after{content:'';position:absolute;width:30px;height:30px;border-color:var(--gold3);border-style:solid;border-width:0;z-index:5}
+.modal::before{top:8px;left:8px;border-top-width:1px;border-left-width:1px}
+.modal::after{bottom:8px;right:8px;border-bottom-width:1px;border-right-width:1px}
+.modal-close{position:absolute;top:14px;right:18px;background:rgba(5,5,8,.85);border:1px solid rgba(201,168,76,.15);color:var(--gold);font-size:20px;cursor:pointer;z-index:10;transition:all .3s;width:34px;height:34px;display:flex;align-items:center;justify-content:center;border-radius:50%;backdrop-filter:blur(8px)}
+.modal-close:hover{color:var(--gold-bright);border-color:var(--gold)}
+.modal-img-wrap{position:relative;width:100%;background:#000;display:block;overflow:hidden;border-bottom:1px solid rgba(201,168,76,.1);max-height:70vh}
+.modal-img-wrap::before{content:'';position:absolute;left:0;right:0;bottom:0;height:30%;background:linear-gradient(180deg,transparent 0%,rgba(5,5,8,.85) 100%);pointer-events:none;z-index:2}
+.modal-img{display:block;width:100%;height:auto;max-height:70vh;object-fit:contain;position:relative;z-index:1;margin:0 auto}
+.modal-body{padding:1.5rem 2rem 2rem;text-align:center}
+.modal-rip{font-family:'Cinzel',serif;font-size:9px;color:var(--text4);letter-spacing:4px;text-transform:uppercase;margin-bottom:6px}
+.modal-name{font-family:'Cinzel',serif;font-size:26px;font-weight:700;color:var(--gold-bright);letter-spacing:2px;margin-bottom:4px;text-shadow:0 0 20px rgba(201,168,76,.2)}
+.modal-chain{font-size:11px;color:var(--text3);margin-bottom:14px;letter-spacing:1px}
+.modal-loss{font-family:'DM Mono',monospace;font-size:32px;color:var(--red2);font-weight:500;margin-bottom:2px;text-shadow:0 0 20px rgba(192,64,48,.2)}
+.modal-pct{font-size:13px;color:var(--red);opacity:.6;margin-bottom:18px}
+.modal-orn{font-size:9px;color:rgba(201,168,76,.3);letter-spacing:3px;margin-bottom:18px}
+.modal-data{margin-bottom:18px;text-align:left}
+.modal-row{display:flex;justify-content:space-between;padding:8px 0;font-size:12px;border-bottom:1px solid rgba(255,255,255,.03)}
+.modal-row span:first-child{color:var(--text3);font-family:'Cinzel',serif;font-size:11px;letter-spacing:1px}
+.modal-row span:last-child{font-family:'DM Mono',monospace;color:var(--text2)}
+.modal-epitaph{font-size:14px;font-style:italic;padding:14px 16px;background:rgba(201,168,76,.03);border-left:2px solid var(--gold3);text-align:left;line-height:1.7;margin-bottom:18px;color:var(--text2)}
+.modal-spent{text-align:center;margin-bottom:18px;padding:10px;background:rgba(201,168,76,.04);border:1px solid rgba(201,168,76,.1)}
+.modal-spent-lbl{font-size:9px;color:var(--text3);letter-spacing:2px;text-transform:uppercase;margin-bottom:3px}
+.modal-spent-val{font-family:'Cinzel',serif;font-size:20px;color:var(--gold)}
+.modal-footer{display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap}
+.modal-addr{font-size:10px;color:var(--text4);font-family:'DM Mono',monospace}
+.modal-vote{background:transparent;border:1px solid var(--gold-dim);color:var(--gold);padding:8px 18px;font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;cursor:pointer;transition:all .3s;text-transform:uppercase}
+.modal-vote:hover{background:rgba(201,168,76,.08);border-color:var(--gold)}
+
+.modal-share{display:flex;justify-content:center;gap:10px;padding:16px 0;border-top:1px solid rgba(201,168,76,.06);border-bottom:1px solid rgba(201,168,76,.06);margin:18px 0}
+.modal-share-label{font-family:'Cinzel',serif;font-size:9px;color:var(--text4);letter-spacing:2px;text-transform:uppercase;width:100%;text-align:center;margin-bottom:8px}
+.share-btn{background:rgba(255,255,255,.02);border:1px solid rgba(201,168,76,.1);color:var(--gold2);width:42px;height:42px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .3s;border-radius:50%}
+.share-btn:hover{background:rgba(201,168,76,.08);border-color:var(--gold);color:var(--gold-bright);transform:translateY(-2px)}
+.share-btn svg{width:18px;height:18px;fill:currentColor}
+.share-btn.copied{background:rgba(124,179,66,.1);border-color:#7cb342;color:#7cb342}
+
+/* Bury Form Modal */
+.bury-form .modal-body{padding:2rem}
+.form-group{margin-bottom:14px}
+.form-group label{display:block;font-family:'Cinzel',serif;font-size:10px;color:var(--gold3);letter-spacing:2px;text-transform:uppercase;margin-bottom:5px}
+.form-input{width:100%;background:rgba(255,255,255,.03);border:1px solid rgba(201,168,76,.1);color:var(--text);padding:9px 12px;font-family:'DM Sans',sans-serif;font-size:13px;outline:none;transition:border-color .3s}
+.form-input:focus{border-color:var(--gold-dim)}
+.form-input::placeholder{color:var(--text4)}
+select.form-input{cursor:pointer;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6' fill='%238b6d1e'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
+select.form-input option{background:var(--bg2);color:var(--text)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.size-options{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px}
+.size-opt{background:rgba(255,255,255,.03);border:1px solid rgba(201,168,76,.08);color:var(--text3);padding:8px 4px;font-family:'DM Mono',monospace;font-size:12px;cursor:pointer;transition:all .3s;text-align:center}
+.size-opt:hover,.size-opt.active{border-color:var(--gold);color:var(--gold);background:rgba(201,168,76,.05)}
+.size-preview{display:flex;align-items:center;gap:8px;padding:6px 0;font-size:10px;color:var(--text3)}
+.size-preview-text{font-style:italic;color:var(--gold3)}
+.form-split{background:rgba(201,168,76,.03);border:1px solid rgba(201,168,76,.1);padding:12px 14px;margin-bottom:16px}
+.form-split-title{font-family:'Cinzel',serif;font-size:9px;color:var(--text3);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px}
+.form-split-row{display:flex;justify-content:space-between;padding:3px 0;font-size:11px}
+.form-split-row span:first-child{color:var(--text3)}
+.form-split-row span:last-child{color:var(--gold);font-family:'DM Mono',monospace}
+.btn-pay{width:100%;background:var(--gold);border:none;color:var(--bg);padding:14px;font-family:'Cinzel',serif;font-size:12px;letter-spacing:3px;text-transform:uppercase;cursor:pointer;font-weight:700;transition:all .3s}
+.btn-pay:hover{background:var(--gold-bright);box-shadow:0 0 30px rgba(201,168,76,.3)}
+
+footer{position:relative;z-index:20;border-top:1px solid rgba(201,168,76,.05);padding:2rem;text-align:center;margin-top:3rem}
+footer .f-orn{font-size:8px;color:rgba(201,168,76,.15);letter-spacing:4px;margin-bottom:6px}
+footer p{font-size:10px;color:var(--text4);letter-spacing:2px;font-family:'Cinzel',serif}
+
+
+/* ============ DRAMA LAYER ============ */
+
+@keyframes moonPulse{0%,100%{box-shadow:0 0 60px rgba(232,224,200,.35),0 0 140px rgba(232,224,200,.18),0 0 280px rgba(232,224,200,.08),0 0 500px rgba(180,170,140,.04)}50%{box-shadow:0 0 80px rgba(232,224,200,.45),0 0 180px rgba(232,224,200,.22),0 0 340px rgba(232,224,200,.1),0 0 600px rgba(180,170,140,.06)}}
+@keyframes emberRise{0%{transform:translateY(0) translateX(0);opacity:0}10%{opacity:.9}90%{opacity:.6}100%{transform:translateY(-110vh) translateX(var(--drift,30px));opacity:0}}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+@keyframes borderPulse{0%,100%{border-color:rgba(201,168,76,.12);box-shadow:0 0 30px rgba(201,168,76,.04),inset 0 0 20px rgba(201,168,76,.01)}50%{border-color:rgba(201,168,76,.28);box-shadow:0 0 60px rgba(201,168,76,.12),inset 0 0 30px rgba(201,168,76,.03)}}
+@keyframes titleGlow{0%,100%{text-shadow:0 0 30px rgba(201,168,76,.25),0 0 60px rgba(201,168,76,.12),0 2px 4px rgba(0,0,0,.8)}50%{text-shadow:0 0 50px rgba(201,168,76,.4),0 0 100px rgba(201,168,76,.2),0 0 150px rgba(201,168,76,.08),0 2px 4px rgba(0,0,0,.8)}}
+@keyframes lightRay{0%{opacity:0;transform:translateY(-20px)}50%{opacity:.6}100%{opacity:0;transform:translateY(20px)}}
+@keyframes scanGold{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+
+.moon{position:fixed;top:60px;right:80px;width:90px;height:90px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#f0e8d0 0%,#d8d0b8 25%,#a8a090 60%,#787060 85%);z-index:2;animation:moonPulse 6s ease-in-out infinite;pointer-events:none}
+.moon::before{content:'';position:absolute;inset:-30px;border-radius:50%;background:radial-gradient(circle,rgba(232,224,200,.08) 0%,transparent 60%);pointer-events:none}
+.moon::after{content:'';position:absolute;inset:-100px;border-radius:50%;background:radial-gradient(circle,rgba(232,224,200,.04) 0%,transparent 70%);pointer-events:none}
+@media(max-width:700px){.moon{width:60px;height:60px;top:80px;right:30px}}
+
+.embers{position:fixed;inset:0;pointer-events:none;z-index:6;overflow:hidden}
+.ember{position:absolute;bottom:-10px;width:2px;height:2px;background:#e6c55a;border-radius:50%;box-shadow:0 0 6px 2px rgba(230,197,90,.5),0 0 12px 4px rgba(230,197,90,.2);animation:emberRise linear infinite}
+.ember:nth-child(1){left:8%;animation-duration:14s;animation-delay:0s;--drift:20px}
+.ember:nth-child(2){left:18%;animation-duration:18s;animation-delay:3s;--drift:-15px}
+.ember:nth-child(3){left:32%;animation-duration:12s;animation-delay:6s;--drift:25px}
+.ember:nth-child(4){left:45%;animation-duration:20s;animation-delay:1s;--drift:-30px}
+.ember:nth-child(5){left:58%;animation-duration:16s;animation-delay:8s;--drift:18px}
+.ember:nth-child(6){left:72%;animation-duration:13s;animation-delay:4s;--drift:-22px}
+.ember:nth-child(7){left:85%;animation-duration:17s;animation-delay:9s;--drift:28px}
+.ember:nth-child(8){left:92%;animation-duration:15s;animation-delay:2s;--drift:-12px}
+
+/* Stronger glassmorphism on nav */
+nav{background:linear-gradient(180deg,rgba(5,5,8,.85) 0%,rgba(5,5,8,.5) 70%,transparent 100%)!important;backdrop-filter:blur(16px) saturate(180%)!important;-webkit-backdrop-filter:blur(16px) saturate(180%)!important;border-bottom:1px solid rgba(201,168,76,.06)}
+
+/* Big dramatic title glow */
+.gate-title{animation:titleGlow 4s ease-in-out infinite}
+
+/* Glassmorphism upgrade for all glass cards */
+.hiw-inner,.pool-inner,.pool-breakdown,.section-inner,.picker-inner,.cta-inner{background:rgba(14,14,22,.55)!important;backdrop-filter:blur(20px) saturate(160%)!important;-webkit-backdrop-filter:blur(20px) saturate(160%)!important;border:1px solid rgba(201,168,76,.12)!important;box-shadow:0 8px 32px rgba(0,0,0,.5),0 0 60px rgba(201,168,76,.04),inset 0 1px 0 rgba(255,255,255,.04)!important}
+.pool-inner{animation:borderPulse 5s ease-in-out infinite}
+
+/* Pool amount with massive glow */
+.pool-amount{animation:titleGlow 4s ease-in-out infinite;background:linear-gradient(90deg,#c9a84c,#e6c55a,#c9a84c,#e6c55a,#c9a84c);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:shimmer 6s linear infinite,titleGlow 4s ease-in-out infinite}
+
+/* Glowing pool bars */
+.pool-bar-fill{box-shadow:0 0 20px rgba(201,168,76,.3),inset 0 0 10px rgba(255,255,255,.05);transition:all .5s}
+.pool-bar:hover .pool-bar-fill{box-shadow:0 0 30px rgba(201,168,76,.5),inset 0 0 15px rgba(255,255,255,.1)}
+
+/* Tier card glassmorphism + pulsing */
+.tier-card{background:rgba(14,14,22,.5)!important;backdrop-filter:blur(12px) saturate(140%)!important;-webkit-backdrop-filter:blur(12px) saturate(140%)!important;box-shadow:0 4px 16px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.03)!important}
+.tier-card:hover{background:rgba(20,18,30,.65)!important;box-shadow:0 16px 48px rgba(0,0,0,.6),0 0 60px rgba(201,168,76,.18),inset 0 1px 0 rgba(255,255,255,.06)!important;border-color:rgba(201,168,76,.45)!important}
+.tier-card.popular{animation:borderPulse 4s ease-in-out infinite;border-color:rgba(201,168,76,.3)!important}
+.tier-card.whale{animation:borderPulse 3s ease-in-out infinite;border-color:rgba(201,168,76,.5)!important;box-shadow:0 8px 32px rgba(0,0,0,.6),0 0 80px rgba(201,168,76,.18),inset 0 1px 0 rgba(255,255,255,.05)!important}
+.tier-card.whale:hover{box-shadow:0 16px 60px rgba(0,0,0,.7),0 0 120px rgba(201,168,76,.35),0 0 240px rgba(201,168,76,.12),inset 0 1px 0 rgba(255,255,255,.08)!important}
+.tier-price{text-shadow:0 0 30px rgba(201,168,76,.4),0 0 60px rgba(201,168,76,.15)}
+
+/* Wallet card glassmorphism */
+.wallet-card{background:rgba(14,14,22,.5)!important;backdrop-filter:blur(12px) saturate(140%)!important;-webkit-backdrop-filter:blur(12px) saturate(140%)!important;transition:all .4s!important}
+.wallet-card:hover{background:rgba(20,18,30,.7)!important;box-shadow:0 12px 36px rgba(0,0,0,.5),0 0 50px rgba(201,168,76,.12)!important;border-color:rgba(201,168,76,.3)!important;transform:translateY(-3px)}
+.wallet-pct{animation:titleGlow 5s ease-in-out infinite}
+
+/* Token box glassmorphism */
+.token-box{background:rgba(14,14,22,.6)!important;backdrop-filter:blur(8px)!important;-webkit-backdrop-filter:blur(8px)!important;transition:all .4s}
+.token-box:hover{background:rgba(24,22,32,.8)!important;box-shadow:0 0 40px rgba(201,168,76,.1) inset}
+
+/* Section titles with glow */
+.section-title,.picker-title,.cemetery-title-text,.cta-title{animation:titleGlow 5s ease-in-out infinite}
+
+/* CTA button with pulsing glow */
+.cta-button{position:relative;overflow:hidden;animation:borderPulse 3s ease-in-out infinite;background:linear-gradient(135deg,var(--gold-bright),var(--gold),var(--gold-bright))!important;background-size:200% 200%!important;animation:scanGold 4s linear infinite,borderPulse 3s ease-in-out infinite!important}
+.cta-button::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.4),transparent);transition:left .8s}
+.cta-button:hover::before{left:100%}
+
+/* Connect button glow */
+.btn-connect-big{animation:borderPulse 3s ease-in-out infinite;position:relative;overflow:hidden}
+.btn-connect-big::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.3),transparent);transition:left .8s}
+.btn-connect-big:hover::before{left:100%}
+
+/* Modal upgraded glassmorphism */
+.modal{background:rgba(14,14,22,.85)!important;backdrop-filter:blur(24px) saturate(180%)!important;-webkit-backdrop-filter:blur(24px) saturate(180%)!important;border:1px solid rgba(201,168,76,.25)!important;box-shadow:0 30px 80px rgba(0,0,0,.7),0 0 120px rgba(201,168,76,.08),inset 0 1px 0 rgba(255,255,255,.05)!important}
+.modal-overlay{background:rgba(0,0,0,.7)!important;backdrop-filter:blur(12px) saturate(140%)!important;-webkit-backdrop-filter:blur(12px) saturate(140%)!important}
+.modal-name{animation:titleGlow 4s ease-in-out infinite}
+.modal-loss{text-shadow:0 0 20px rgba(192,64,48,.4),0 0 40px rgba(192,64,48,.2),0 0 80px rgba(192,64,48,.1)}
+
+/* Iron gate stats with glow */
+.gs-val{animation:titleGlow 5s ease-in-out infinite}
+
+/* Light rays from moon */
+.light-rays{position:fixed;top:0;right:0;width:300px;height:100vh;pointer-events:none;z-index:1;background:linear-gradient(225deg,rgba(232,224,200,.04) 0%,transparent 60%);animation:lightRay 8s ease-in-out infinite}
+
+/* Stronger fog */
+.fog-layer{opacity:.08!important}
+.fog-layer:nth-child(3){background:repeating-linear-gradient(90deg,transparent 0%,rgba(220,200,160,.05) 6%,transparent 12%);animation:fogDrift 70s linear infinite;top:80%}
+
+/* Vignette much stronger for drama */
+.vignette{background:radial-gradient(ellipse 80% 70% at 50% 40%,transparent 0%,rgba(5,5,8,.4) 60%,rgba(5,5,8,.85) 100%)!important}
+
+/* Hover glow on share buttons */
+.share-btn:hover{box-shadow:0 0 25px rgba(201,168,76,.3),0 0 50px rgba(201,168,76,.1)!important}
+
+/* Buttons with gold shimmer */
+.btn-bury,.btn-pay{position:relative;overflow:hidden;background:linear-gradient(135deg,var(--gold-bright),var(--gold),var(--gold-bright))!important;background-size:200% 200%!important;animation:scanGold 5s linear infinite}
+.btn-bury::before,.btn-pay::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.35),transparent);transition:left .7s}
+.btn-bury:hover::before,.btn-pay:hover::before{left:100%}
+
+</style>
+</head>
+<body>
+
+<div class="sky"></div>
+<div class="fog"><div class="fog-layer"></div><div class="fog-layer"></div></div>
+<div class="vignette"></div>
+<div class="grain"></div>
+<div class="moon"></div>
+<div class="light-rays"></div>
+<div class="embers">
+  <div class="ember"></div>
+  <div class="ember"></div>
+  <div class="ember"></div>
+  <div class="ember"></div>
+  <div class="ember"></div>
+  <div class="ember"></div>
+  <div class="ember"></div>
+  <div class="ember"></div>
+</div>
+
+
+<nav>
+  <a href="index.html" class="nav-logo">&larr; &#x271D; Degen Graveyard</a>
+  <div class="nav-right">
+    <a href="#picker">Pick a Tomb</a>
+    <a href="#cemetery">The Fallen</a>
+    <button class="btn-connect-big">&#x271D; Connect Wallet</button>
+  </div>
+</nav>
+
+<div class="page">
+
+  <div class="iron-gate">
+    <div class="gate-frame">
+      <div class="gate-pillar l"><div class="finial"></div></div>
+      <div class="gate-pillar r"><div class="finial"></div></div>
+      <div class="gate-arch-bar"></div>
+      <div class="gate-chains l"><div class="chain-link"></div><div class="chain-link"></div><div class="chain-link"></div></div>
+      <div class="gate-chains r"><div class="chain-link"></div><div class="chain-link"></div><div class="chain-link"></div></div>
+    </div>
+    <div class="gate-orn">&loz; &bull; &loz; &bull; &loz;</div>
+    <div class="gate-title">The Graveyard</div>
+    <div class="gate-subtitle">Pick a tomb &middot; Bury your bags &middot; Rest in pieces</div>
+    <div class="gate-latin">Connect Phantom to begin &mdash; 2,847 already buried</div>
+    <div class="gate-stats">
+      <div><div class="gs-val">2,847</div><div class="gs-lbl">Buried</div></div>
+      <div><div class="gs-val">$41.2K</div><div class="gs-lbl">USDC Collected</div></div>
+      <div><div class="gs-val">$890</div><div class="gs-lbl">Weekly Prize</div></div>
+    </div>
+  </div>
+
+  <div class="tier-picker" id="picker">
+    <div class="picker-inner">
+      <div class="picker-orn">&loz; &bull; &loz; &bull; &loz;</div>
+      <div class="picker-title">Step 1 &mdash; Pick Your Tomb</div>
+      <div class="picker-sub">The bigger you pay, the bigger you flex. Click any tomb to bury a token.</div>
+      <div class="picker-grid">
+
+        <div class="tier-card" onclick="pickTier(0)">
+          <div class="tier-img-wrap"><img src="tombstones/tier-0-free.png" class="tier-img" alt=""></div>
+          <div class="tier-price">FREE</div>
+          <div class="tier-name">Wooden Cross</div>
+          <div class="tier-desc">Gas only</div>
+        </div>
+
+        <div class="tier-card" onclick="pickTier(2)">
+          <div class="tier-img-wrap"><img src="tombstones/tier-1-2usd.png" class="tier-img" alt=""></div>
+          <div class="tier-price">$2</div>
+          <div class="tier-name">Plain Headstone</div>
+          <div class="tier-desc">A modest start</div>
+        </div>
+
+        <div class="tier-card" onclick="pickTier(5)">
+          <div class="tier-img-wrap"><img src="tombstones/tier-2-5usd.png" class="tier-img" alt=""></div>
+          <div class="tier-price">$5</div>
+          <div class="tier-name">Engraved Stone</div>
+          <div class="tier-desc">Carved cross + base</div>
+        </div>
+
+        <div class="tier-card" onclick="pickTier(10)">
+          <div class="tier-img-wrap"><img src="tombstones/tier-3-10usd.png" class="tier-img" alt=""></div>
+          <div class="tier-price">$10</div>
+          <div class="tier-name">Gold-Trimmed Arch</div>
+          <div class="tier-desc">Side pillars + gold</div>
+        </div>
+
+        <div class="tier-card popular" onclick="pickTier(25)">
+          <div class="tier-flag">Most popular</div>
+          <div class="tier-img-wrap"><img src="tombstones/tier-4-25usd.png" class="tier-img" alt=""></div>
+          <div class="tier-price">$25</div>
+          <div class="tier-name">Ornate Cross</div>
+          <div class="tier-desc">Urns + roses + glow</div>
+        </div>
+
+        <div class="tier-card" onclick="pickTier(50)">
+          <div class="tier-img-wrap"><img src="tombstones/tier-5-50usd.png" class="tier-img" alt=""></div>
+          <div class="tier-price">$50</div>
+          <div class="tier-name">Mausoleum</div>
+          <div class="tier-desc">Columns + fire urns</div>
+        </div>
+
+        <div class="tier-card" onclick="pickTier(100)">
+          <div class="tier-img-wrap"><img src="tombstones/tier-6-100usd.png" class="tier-img" alt=""></div>
+          <div class="tier-price">$100</div>
+          <div class="tier-name">Weeping Angel</div>
+          <div class="tier-desc">Marble angel tomb</div>
+        </div>
+
+        <div class="tier-card" onclick="pickTier(250)">
+          <div class="tier-img-wrap"><img src="tombstones/tier-7-250usd.png" class="tier-img" alt=""></div>
+          <div class="tier-price">$250</div>
+          <div class="tier-name">Pharaoh Tomb</div>
+          <div class="tier-desc">Golden triumphant angel</div>
+        </div>
+
+        <div class="tier-card whale" onclick="pickTier(1000)">
+          <div class="tier-flag whale-flag">Whale tier</div>
+          <div class="tier-img-wrap"><img src="tombstones/tier-8-1000usd.png" class="tier-img" alt=""></div>
+          <div class="tier-price">$1,000</div>
+          <div class="tier-name">Gothic Cathedral</div>
+          <div class="tier-desc">The ultimate flex</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="cemetery" id="cemetery">
+    <div class="cemetery-title">
+      <div class="cemetery-title-text">&#x271D; The Fallen &#x271D;</div>
+      <div class="cemetery-title-sub">Step 2 &mdash; Browse the buried &middot; Click any grave</div>
+    </div>
+
+    <div class="graves">
+
+      <div class="grave t-1000" onclick="openM(this)" data-img="tombstones/tier-8-1000usd.png" data-name="$LUNA" data-chain="Terra" data-loss="-$487,200" data-pct="-99.99%" data-in="$487,500" data-out="$300" data-time="3 days" data-cod="Algorithmic collapse" data-epitaph="Anchor protocol promised 20% APY. The protocol delivered -100%. I lost everything in 72 hours watching the chart in real time, refreshing CoinGecko every 30 seconds, hoping for a bounce that never came. Do Kwon is in Montenegro. My retirement is in the void. The cathedral I built here is the last monument to the dumbest financial decision of my entire life." data-addr="0x9af...e2d" data-spent="$1,000" data-votes="9,847">
+        <div class="winner-badge">&#9760; All-Time Worst Rug</div>
+        <img src="tombstones/tier-8-1000usd.png" class="grave-img" alt="">
+        <div class="grave-glow"></div>
+        <div class="grave-spent">$1,000</div>
+        <div class="grave-overlay">
+          <div class="grave-orn">&loz; &bull; &loz; &bull; &loz;</div>
+          <div class="grave-name">$LUNA</div>
+          <div class="grave-chain">Terra Classic</div>
+          <div class="grave-loss">-$487,200</div>
+          <div class="grave-pct">-99.99%</div>
+          <div class="grave-orn">&mdash; &loz; &mdash;</div>
+          <div class="grave-epitaph">"The cathedral I built here is the last monument to the dumbest financial decision of my entire life."</div>
+          <div class="grave-votes">&#9760; 9,847 votes</div>
+        </div>
+      </div>
+
+      <div class="grave t-250" onclick="openM(this)" data-img="tombstones/tier-7-250usd.png" data-name="$FTT" data-chain="Solana" data-loss="-$22,400" data-pct="-97.8%" data-in="$24,500" data-out="$539" data-time="1 year" data-cod="Exchange collapse" data-epitaph="SBF said funds were safe. Reader, they were in the Bahamas with my retirement and his parents' beach house." data-addr="0x7dc...a44" data-spent="$280" data-votes="4,201">
+        <img src="tombstones/tier-7-250usd.png" class="grave-img" alt="">
+        <div class="grave-glow"></div>
+        <div class="grave-spent">$280</div>
+        <div class="grave-overlay">
+          <div class="grave-orn">&loz; &bull; &loz;</div>
+          <div class="grave-name">$FTT</div>
+          <div class="grave-chain">Solana</div>
+          <div class="grave-loss">-$22,400</div>
+          <div class="grave-pct">-97.8%</div>
+          <div class="grave-orn">&mdash; &loz; &mdash;</div>
+          <div class="grave-epitaph">"Funds were safu. Narrator: they were not."</div>
+          <div class="grave-votes">&#9760; 4,201 votes</div>
+        </div>
+      </div>
+
+      <div class="grave t-100" onclick="openM(this)" data-img="tombstones/tier-6-100usd.png" data-name="$BITCONNECT" data-chain="Ethereum" data-loss="-$14,200" data-pct="-100%" data-in="$14,200" data-out="$0" data-time="8 months" data-cod="Ponzi collapse" data-epitaph="HEY HEY HEYYY. WASA WASA WASAAA. I was financially independently ruined. Carlos would be proud." data-addr="0x44d...c82" data-spent="$120" data-votes="3,401">
+        <div class="winner-badge">&#9760; Week 13 Winner</div>
+        <img src="tombstones/tier-6-100usd.png" class="grave-img" alt="">
+        <div class="grave-glow"></div>
+        <div class="grave-spent">$120</div>
+        <div class="grave-overlay">
+          <div class="grave-orn">&loz; &bull; &loz;</div>
+          <div class="grave-name">$BITCONNECT</div>
+          <div class="grave-chain">Ethereum</div>
+          <div class="grave-loss">-$14,200</div>
+          <div class="grave-pct">-100%</div>
+          <div class="grave-orn">&mdash; &loz; &mdash;</div>
+          <div class="grave-epitaph">"HEY HEY HEYYY. Financially ruined."</div>
+          <div class="grave-votes">&#9760; 3,401 votes</div>
+        </div>
+      </div>
+
+      <div class="grave t-free" onclick="openM(this)" data-img="tombstones/tier-0-free.png" data-name="$RUG1" data-chain="BSC" data-loss="-$18" data-pct="-100%" data-in="$18" data-out="$0" data-time="5 min" data-cod="Rug" data-epitaph="Lol." data-addr="0x111...aaa" data-spent="Free" data-votes="2">
+        <img src="tombstones/tier-0-free.png" class="grave-img" alt="">
+        <div class="grave-glow"></div>
+        <div class="grave-spent">Free</div>
+        <div class="grave-overlay">
+          <div class="grave-name">$RUG1</div>
+          <div class="grave-loss">-$18</div>
+        </div>
+      </div>
+
+      <div class="grave t-50" onclick="openM(this)" data-img="tombstones/tier-5-50usd.png" data-name="$LIBRA" data-chain="Solana" data-loss="-$5,600" data-pct="-99.5%" data-in="$5,628" data-out="$28" data-time="30 min" data-cod="Presidential rug" data-epitaph="An actual sitting president of a G20 nation shilled this. I was exit liquidity for Argentina's foreign debt." data-addr="0xb09...d33" data-spent="$60" data-votes="3,890">
+        <img src="tombstones/tier-5-50usd.png" class="grave-img" alt="">
+        <div class="grave-glow"></div>
+        <div class="grave-spent">$60</div>
+        <div class="grave-overlay">
+          <div class="grave-orn">&loz; &bull; &loz;</div>
+          <div class="grave-name">$LIBRA</div>
+          <div class="grave-chain">Solana</div>
+          <div class="grave-loss">-$5,600</div>
+          <div class="grave-pct">-99.5%</div>
+          <div class="grave-epitaph">"A president shilled this. Still rugged."</div>
+          <div class="grave-votes">&#9760; 3,890 votes</div>
+        </div>
+      </div>
+
+      <div class="grave t-25" onclick="openM(this)" data-img="tombstones/tier-4-25usd.png" data-name="$SQUIDGAME" data-chain="BSC" data-loss="-$3,400" data-pct="-100%" data-in="$3,400" data-out="$0" data-time="2 weeks" data-cod="Honeypot" data-epitaph="Couldn't sell. Literally. The sell button was decoration. Most expensive Netflix tie-in ever." data-addr="0xc33...e5d" data-spent="$32" data-votes="1,892">
+        <img src="tombstones/tier-4-25usd.png" class="grave-img" alt="">
+        <div class="grave-glow"></div>
+        <div class="grave-spent">$32</div>
+        <div class="grave-overlay">
+          <div class="grave-name">$SQUIDGAME</div>
+          <div class="grave-chain">BSC</div>
+          <div class="grave-loss">-$3,400</div>
+          <div class="grave-pct">-100%</div>
+          <div class="grave-epitaph">"Sell button was decoration."</div>
+          <div class="grave-votes">&#9760; 1,892 votes</div>
+        </div>
+      </div>
+
+      <div class="grave t-2" onclick="openM(this)" data-img="tombstones/tier-1-2usd.png" data-name="$CATGIRL" data-chain="BSC" data-loss="-$620" data-pct="-99.9%" data-in="$620" data-out="$0.62" data-time="5 days" data-cod="Abandoned" data-epitaph="GF made me buy it. She's gone too. At least the token had cute art." data-addr="0xf72...1a9" data-spent="$3" data-votes="567">
+        <img src="tombstones/tier-1-2usd.png" class="grave-img" alt="">
+        <div class="grave-glow"></div>
+        <div class="grave-spent">$3</div>
+        <div class="grave-overlay">
+          <div class="grave-name">$CATGIRL</div>
+          <div class="grave-loss">-$620</div>
+        </div>
+      </div>
+
+      <div class="grave t-10" onclick="openM(this)" data-img="tombstones/tier-3-10usd.png" data-name="$HAWK" data-chain="Solana" data-loss="-$2,150" data-pct="-99.1%" data-in="$2,170" data-out="$19.50" data-time="4 hours" data-cod="Celebrity dump" data-epitaph="Hailey said tuah. My portfolio said nah. Fastest celebrity rug since the last celebrity rug." data-addr="0xa22...f41" data-spent="$14" data-votes="2,103">
+        <img src="tombstones/tier-3-10usd.png" class="grave-img" alt="">
+        <div class="grave-glow"></div>
+        <div class="grave-spent">$14</div>
+        <div class="grave-overlay">
+          <div class="grave-name">$HAWK</div>
+          <div class="grave-chain">Solana</div>
+          <div class="grave-loss">-$2,150</div>
+          <div class="grave-pct">-99.1%</div>
+          <div class="grave-epitaph">"Tuah. Portfolio said nah."</div>
+          <div class="grave-votes">&#9760; 2,103 votes</div>
+        </div>
+      </div>
+
+      <div class="grave t-5" onclick="openM(this)" data-img="tombstones/tier-2-5usd.png" data-name="$RUGPULL" data-chain="Solana" data-loss="-$4,187" data-pct="-99.7%" data-in="$4,200" data-out="$12.60" data-time="47 min" data-cod="Dev dumped" data-epitaph="Dev said community takeover then deleted the TG in 3 minutes flat. The community was just me." data-addr="0x8f3...a2d" data-spent="$7" data-votes="342">
+        <img src="tombstones/tier-2-5usd.png" class="grave-img" alt="">
+        <div class="grave-glow"></div>
+        <div class="grave-spent">$7</div>
+        <div class="grave-overlay">
+          <div class="grave-name">$RUGPULL</div>
+          <div class="grave-chain">Solana</div>
+          <div class="grave-loss">-$4,187</div>
+          <div class="grave-epitaph">"Dev vanished. Community was me."</div>
+          <div class="grave-votes">&#9760; 342</div>
+        </div>
+      </div>
+
+      <div class="grave t-free" onclick="openM(this)" data-img="tombstones/tier-0-free.png" data-name="$LOL" data-chain="Sol" data-loss="-$5" data-pct="-100%" data-in="$5" data-out="$0" data-time="2 min" data-cod="Rug" data-epitaph="Five bucks gone." data-addr="0x222...bbb" data-spent="Free" data-votes="1">
+        <img src="tombstones/tier-0-free.png" class="grave-img" alt="">
+        <div class="grave-glow"></div>
+        <div class="grave-spent">Free</div>
+        <div class="grave-overlay">
+          <div class="grave-name">$LOL</div>
+          <div class="grave-loss">-$5</div>
+        </div>
+      </div>
+
+      <div class="grave t-10" onclick="openM(this)" data-img="tombstones/tier-3-10usd.png" data-name="$SAFEELON" data-chain="BSC" data-loss="-$1,768" data-pct="-98.2%" data-in="$1,800" data-out="$32.40" data-time="3 weeks" data-cod="Honeypot" data-epitaph="Three red flags in the name and I still aped. Safe? No. Elon? No. Mars? No." data-addr="0x2b1...f8c" data-spent="$11" data-votes="891">
+        <img src="tombstones/tier-3-10usd.png" class="grave-img" alt="">
+        <div class="grave-glow"></div>
+        <div class="grave-spent">$11</div>
+        <div class="grave-overlay">
+          <div class="grave-name">$SAFEELON</div>
+          <div class="grave-chain">BSC</div>
+          <div class="grave-loss">-$1,768</div>
+          <div class="grave-pct">-98.2%</div>
+          <div class="grave-epitaph">"Three red flags. Still aped."</div>
+          <div class="grave-votes">&#9760; 891</div>
+        </div>
+      </div>
+
+      <div class="grave t-5" onclick="openM(this)" data-img="tombstones/tier-2-5usd.png" data-name="$LUNAV2" data-chain="Terra" data-loss="-$8,000" data-pct="-94.1%" data-in="$8,500" data-out="$501" data-time="6 months" data-cod="Repeat scam" data-epitaph="Bought the recovery. There was no recovery. Just Do Kwon's ghost from a Montenegrin jail cell." data-addr="0xd4e...71b" data-spent="$8" data-votes="1,204">
+        <img src="tombstones/tier-2-5usd.png" class="grave-img" alt="">
+        <div class="grave-glow"></div>
+        <div class="grave-spent">$8</div>
+        <div class="grave-overlay">
+          <div class="grave-name">$LUNAV2</div>
+          <div class="grave-chain">Terra</div>
+          <div class="grave-loss">-$8,000</div>
+          <div class="grave-epitaph">"No recovery. Just ghosts."</div>
+          <div class="grave-votes">&#9760; 1,204</div>
+        </div>
+      </div>
+
+      <div class="grave t-2" onclick="openM(this)" data-img="tombstones/tier-1-2usd.png" data-name="$BABYDOGE" data-chain="BSC" data-loss="-$450" data-pct="-92.8%" data-in="$490" data-out="$35" data-time="1 month" data-cod="Slow rug" data-epitaph="The baby grew up and chose violence." data-addr="0xe17...a3c" data-spent="$2" data-votes="198">
+        <img src="tombstones/tier-1-2usd.png" class="grave-img" alt="">
+        <div class="grave-glow"></div>
+        <div class="grave-spent">$2</div>
+        <div class="grave-overlay">
+          <div class="grave-name">$BABYDOGE</div>
+          <div class="grave-loss">-$450</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="bury-modal" onclick="if(event.target===this)closeBury()">
+  <div class="modal bury-form">
+    <button class="modal-close" onclick="closeBury()">&times;</button>
+    <div class="modal-body">
+      <div style="text-align:center;margin-bottom:1.25rem">
+        <div style="font-family:'Cinzel Decorative',serif;font-size:24px;color:var(--gold-bright);margin-bottom:6px">&#x271D;</div>
+        <div style="font-family:'Cinzel',serif;font-size:18px;color:var(--gold);letter-spacing:3px;text-transform:uppercase">Bury a Token</div>
+        <div style="font-size:10px;color:var(--text3);margin-top:4px;letter-spacing:1px">Connect &middot; Fill &middot; Pay &middot; Rest in pieces</div>
+      </div>
+      <div class="form-group"><label>Token name</label><input type="text" placeholder="$RUGPULL" class="form-input"></div>
+      <div class="form-row">
+        <div class="form-group"><label>Chain</label><select class="form-input"><option>Solana</option><option>Ethereum</option><option>BSC</option><option>Polygon</option><option>Base</option><option>Other</option></select></div>
+        <div class="form-group"><label>Time held</label><input type="text" placeholder="47 minutes" class="form-input"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Amount invested</label><input type="number" placeholder="4200" class="form-input"></div>
+        <div class="form-group"><label>Amount recovered</label><input type="number" placeholder="12.60" class="form-input"></div>
+      </div>
+      <div class="form-group"><label>Cause of death</label><select class="form-input"><option>Rug pull</option><option>Honeypot</option><option>Dev abandoned</option><option>Ponzi collapse</option><option>Celebrity dump</option><option>Exchange collapse</option><option>Slow bleed</option><option>My own stupidity</option></select></div>
+      <div class="form-group"><label>Epitaph</label><textarea class="form-input" rows="3" placeholder="Write your last words..." style="resize:vertical"></textarea></div>
+      <div class="form-group"><label>Tombstone tier (USDC)</label>
+        <div class="size-options">
+          <button class="size-opt" onclick="selectSize(this,2)">$2</button>
+          <button class="size-opt" onclick="selectSize(this,5)">$5</button>
+          <button class="size-opt" onclick="selectSize(this,10)">$10</button>
+          <button class="size-opt active" onclick="selectSize(this,25)">$25</button>
+          <button class="size-opt" onclick="selectSize(this,50)">$50</button>
+          <button class="size-opt" onclick="selectSize(this,100)">$100</button>
+          <button class="size-opt" onclick="selectSize(this,250)">$250</button>
+          <button class="size-opt" onclick="selectSize(this,1000)">$1K</button>
+          <button class="size-opt" onclick="selectSize(this,0)">Free</button>
+        </div>
+        <div class="size-preview"><span class="size-preview-text" id="size-text">Ornate cross with urns</span></div>
+      </div>
+      <div class="form-split">
+        <div class="form-split-title">Your $25 will be split instantly:</div>
+        <div class="form-split-row"><span>$GRAVE holders (30%)</span><span id="split-hold">$7.50</span></div>
+        <div class="form-split-row"><span>Treasury (25%)</span><span id="split-tres">$6.25</span></div>
+        <div class="form-split-row"><span>Team &amp; marketing (20%)</span><span id="split-mkt">$5.00</span></div>
+        <div class="form-split-row"><span>Prize pool (15%)</span><span id="split-pool">$3.75</span></div>
+        <div class="form-split-row"><span>Buyback &amp; burn (10%)</span><span id="split-burn">$2.50</span></div>
+      </div>
+      <button class="btn-pay" onclick="alert('Connect Phantom wallet to continue')">&#x271D; Connect Wallet &amp; Pay $25 USDC</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal" onclick="if(event.target===this)closeM()">
+  <div class="modal">
+    <button class="modal-close" onclick="closeM()">&times;</button>
+    <div class="modal-img-wrap">
+      <img id="m-img" class="modal-img" src="" alt="">
+    </div>
+    <div class="modal-body">
+      <div class="modal-rip">Here lies</div>
+      <div class="modal-name" id="mn"></div>
+      <div class="modal-chain" id="mc"></div>
+      <div class="modal-loss" id="ml"></div>
+      <div class="modal-pct" id="mp"></div>
+      <div class="modal-orn">&mdash; &loz; &mdash;</div>
+      <div class="modal-data">
+        <div class="modal-row"><span>Invested</span><span id="mi"></span></div>
+        <div class="modal-row"><span>Recovered</span><span id="mo"></span></div>
+        <div class="modal-row"><span>Time held</span><span id="mt"></span></div>
+        <div class="modal-row"><span>Cause of death</span><span id="md"></span></div>
+      </div>
+      <div class="modal-epitaph" id="me"></div>
+      <div class="modal-spent"><div class="modal-spent-lbl">Total USDC spent on this grave</div><div class="modal-spent-val" id="ms"></div></div>
+      <div class="modal-share">
+        <div class="modal-share-label">&loz; Share this grave &loz;</div>
+        <button class="share-btn" onclick="shareTwitter()" title="Share on X">
+          <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        </button>
+        <button class="share-btn" onclick="shareTelegram()" title="Share on Telegram">
+          <svg viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+        </button>
+        <button class="share-btn" onclick="copyLink(this)" title="Copy link">
+          <svg viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/></svg>
+        </button>
+      </div>
+      <div class="modal-footer">
+        <span class="modal-addr" id="ma"></span>
+        <button class="modal-vote">&#9760; Vote Worst Rug</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="f-orn">&loz; &bull; &loz; &bull; &loz;</div>
+  <p>Degen Graveyard &mdash; MMXXVI &mdash; Built on Solana</p>
+</footer>
+
+<script>
+let currentGrave={};
+function openM(el){
+  const d=el.dataset;
+  currentGrave=d;
+  document.getElementById('m-img').src=d.img;
+  document.getElementById('mn').textContent=d.name;
+  document.getElementById('mc').textContent=d.chain;
+  document.getElementById('ml').textContent=d.loss;
+  document.getElementById('mp').textContent=d.pct;
+  document.getElementById('mi').textContent=d.in;
+  document.getElementById('mo').textContent=d.out;
+  document.getElementById('mt').textContent=d.time;
+  document.getElementById('md').textContent=d.cod;
+  document.getElementById('me').textContent='\u201C'+d.epitaph+'\u201D';
+  document.getElementById('ms').textContent=d.spent;
+  document.getElementById('ma').textContent=d.addr;
+  document.getElementById('modal').classList.add('open');
+}
+function closeM(){document.getElementById('modal').classList.remove('open')}
+function closeBury(){document.getElementById('bury-modal').classList.remove('open')}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeM();closeBury()}});
+
+function shareTwitter(){
+  const d=currentGrave;
+  const text=`\u271D ${d.name} just got buried in the Degen Graveyard.\n\n\u26B0\uFE0F Loss: ${d.loss} (${d.pct})\n\u23F1 Time held: ${d.time}\n\uD83D\uDC80 Cause: ${d.cod}\n\n"${d.epitaph}"\n\nRest in pieces \u2620\uFE0F`;
+  const url='https://degengraveyard.fun';
+  window.open('https://twitter.com/intent/tweet?text='+encodeURIComponent(text)+'&url='+encodeURIComponent(url),'_blank');
+}
+function shareTelegram(){
+  const d=currentGrave;
+  const text=`\u271D ${d.name} \u2014 Buried in the Degen Graveyard\n\nLoss: ${d.loss} (${d.pct})\nCause: ${d.cod}\n\n"${d.epitaph}"`;
+  const url='https://degengraveyard.fun';
+  window.open('https://t.me/share/url?url='+encodeURIComponent(url)+'&text='+encodeURIComponent(text),'_blank');
+}
+function copyLink(btn){
+  const d=currentGrave;
+  const link='https://degengraveyard.fun/?grave='+encodeURIComponent(d.name);
+  navigator.clipboard.writeText(link).then(()=>{
+    btn.classList.add('copied');
+    setTimeout(()=>btn.classList.remove('copied'),1500);
+  });
+}
+
+function pickTier(amt){
+  document.getElementById('bury-modal').classList.add('open');
+  setTimeout(()=>{
+    const buttons=document.querySelectorAll('.size-opt');
+    buttons.forEach(b=>{
+      const btnAmt=b.textContent.replace(/\$|K/g,'').trim();
+      const cleanAmt=btnAmt==='Free'?0:(btnAmt==='1'?1000:parseInt(btnAmt));
+      if(cleanAmt===amt){selectSize(b,amt);b.scrollIntoView({behavior:'smooth',block:'center'})}
+    });
+  },100);
+}
+
+const sizeDesc={0:'Wooden cross marker',2:'Plain weathered headstone',5:'Engraved stone with cross',10:'Gold-trimmed arch with pillars',25:'Ornate cross with urns',50:'Mausoleum with fire urns',100:'Tomb with weeping marble angel',250:'Pharaoh mausoleum with golden angel',1000:'Gothic CATHEDRAL — the ultimate whale flex'};
+function selectSize(btn,amt){
+  document.querySelectorAll('.size-opt').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('split-hold').textContent='$'+(amt*0.30).toFixed(2);
+  document.getElementById('split-tres').textContent='$'+(amt*0.25).toFixed(2);
+  document.getElementById('split-mkt').textContent='$'+(amt*0.20).toFixed(2);
+  document.getElementById('split-pool').textContent='$'+(amt*0.15).toFixed(2);
+  document.getElementById('split-burn').textContent='$'+(amt*0.10).toFixed(2);
+  document.getElementById('size-text').textContent=sizeDesc[amt];
+  document.querySelector('.btn-pay').textContent=amt===0?'\u271D Get a Free Grave (gas only)':'\u271D Connect Wallet & Pay $'+amt+' USDC';
+  document.querySelector('.form-split-title').textContent='Your $'+amt+' will be split instantly:';
+}
+</script>
+
+</body>
+</html>

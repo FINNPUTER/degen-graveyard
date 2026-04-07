@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Degen Graveyard</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cinzel+Decorative:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+--bg:#050508;--bg2:#0a0a10;--bg3:#0e0e16;
+--gold:#c9a84c;--gold2:#a8872e;--gold3:#8b6d1e;--gold-bright:#e6c55a;
+--gold-dim:rgba(201,168,76,.3);
+--text:#d8d0c0;--text2:#8a8070;--text3:#5a5448;--text4:#3a3530;
+--red:#a03020;--red2:#c04030;
+--iron:#2a2828;
+}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;overflow-x:hidden}
+
+@keyframes fogDrift{0%{transform:translateX(0)}100%{transform:translateX(-33.33%)}}
+@keyframes flicker{0%,100%{opacity:1}30%{opacity:.85}60%{opacity:.95}}
+@keyframes ravenFloat{0%,100%{transform:translate(0,0) rotate(0deg)}25%{transform:translate(3px,-2px) rotate(.5deg)}75%{transform:translate(-2px,1px) rotate(-.5deg)}}
+@keyframes chainSwing{0%,100%{transform:rotate(-1deg)}50%{transform:rotate(1deg)}}
+@keyframes fadeUp{0%{opacity:0;transform:translateY(20px)}100%{opacity:1;transform:translateY(0)}}
+@keyframes pulseGold{0%,100%{box-shadow:0 0 30px rgba(201,168,76,.06)}50%{box-shadow:0 0 50px rgba(201,168,76,.12)}}
+
+.sky{position:fixed;top:0;left:0;right:0;height:100vh;background:radial-gradient(ellipse 120% 80% at 50% 10%,#0c0c18 0%,#080810 40%,#050508 100%);pointer-events:none;z-index:0}
+.fog{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:3}
+.fog-layer{position:absolute;width:300%;height:100%;opacity:.06}
+.fog-layer:nth-child(1){background:repeating-linear-gradient(90deg,transparent 0%,rgba(200,180,140,.04) 8%,transparent 16%);animation:fogDrift 40s linear infinite}
+.fog-layer:nth-child(2){background:repeating-linear-gradient(90deg,transparent 0%,rgba(180,160,120,.03) 12%,transparent 24%);animation:fogDrift 55s linear infinite reverse;top:50%}
+.vignette{position:fixed;top:0;left:0;right:0;bottom:0;background:radial-gradient(ellipse 90% 80% at 50% 40%,transparent 0%,rgba(5,5,8,.3) 70%,rgba(5,5,8,.7) 100%);pointer-events:none;z-index:4}
+.grain{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:5;opacity:.03;mix-blend-mode:overlay;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;background:linear-gradient(180deg,rgba(5,5,8,.95) 0%,transparent 100%);backdrop-filter:blur(8px)}
+.nav-logo{font-family:'Cinzel Decorative',serif;font-size:15px;color:var(--gold);letter-spacing:4px;text-transform:uppercase;text-shadow:0 0 20px rgba(201,168,76,.2)}
+.nav-right{display:flex;gap:1.5rem;align-items:center}
+.nav-right a{color:var(--text3);font-size:11px;text-decoration:none;letter-spacing:2px;text-transform:uppercase;transition:color .4s}
+.nav-right a:hover{color:var(--gold)}
+.btn-bury{background:var(--gold);border:none;color:var(--bg);padding:8px 20px;font-family:'Cinzel',serif;font-size:10px;letter-spacing:3px;text-transform:uppercase;cursor:pointer;font-weight:700;transition:all .3s}
+.btn-bury:hover{background:var(--gold-bright);box-shadow:0 0 20px rgba(201,168,76,.3)}
+.btn-connect{background:transparent;border:1px solid var(--gold-dim);color:var(--gold2);padding:8px 20px;font-family:'Cinzel',serif;font-size:10px;letter-spacing:3px;text-transform:uppercase;cursor:pointer;transition:all .3s}
+.btn-connect:hover{border-color:var(--gold);color:var(--gold)}
+
+.page{position:relative;z-index:10;padding-top:70px}
+
+.iron-gate{position:relative;text-align:center;padding:3rem 2rem 2rem;margin-bottom:1rem}
+.gate-frame{position:absolute;top:0;left:50%;transform:translateX(-50%);width:min(90vw,700px);height:100%;pointer-events:none}
+.gate-pillar{position:absolute;top:0;width:6px;height:100%}
+.gate-pillar.l{left:0;background:linear-gradient(180deg,var(--iron),#1e1c1c,transparent)}
+.gate-pillar.r{right:0;background:linear-gradient(180deg,var(--iron),#1e1c1c,transparent)}
+.gate-pillar .finial{position:absolute;top:-12px;left:50%;transform:translateX(-50%);width:14px;height:18px;background:var(--gold);clip-path:polygon(40% 0%,60% 0%,60% 28%,100% 28%,100% 48%,60% 48%,60% 100%,40% 100%,40% 48%,0% 48%,0% 28%,40% 28%);box-shadow:0 0 12px rgba(201,168,76,.4);filter:drop-shadow(0 0 6px rgba(201,168,76,.5))}
+.gate-arch-bar{position:absolute;top:12px;left:6px;right:6px;height:2px;background:var(--iron)}
+.gate-chains{position:absolute;bottom:20%;width:20px;animation:chainSwing 4s ease-in-out infinite}
+.gate-chains.l{left:8px}.gate-chains.r{right:8px}
+.chain-link{width:8px;height:14px;border:1.5px solid var(--iron);border-radius:3px;margin:-4px auto}
+
+.gate-orn{font-size:10px;color:var(--gold3);letter-spacing:8px;margin-bottom:6px}
+.gate-title{font-family:'Cinzel Decorative',serif;font-size:clamp(36px,6vw,64px);color:var(--gold);letter-spacing:8px;text-transform:uppercase;line-height:1;margin-bottom:10px;text-shadow:0 0 60px rgba(201,168,76,.2),0 2px 4px rgba(0,0,0,.6)}
+.gate-subtitle{font-family:'Cinzel',serif;font-size:clamp(11px,1.5vw,14px);color:var(--text3);letter-spacing:6px;text-transform:uppercase}
+.gate-latin{font-family:'Cinzel',serif;font-size:10px;color:var(--text4);letter-spacing:4px;font-style:italic;margin-top:8px}
+.gate-stats{display:flex;justify-content:center;gap:clamp(1.5rem,4vw,3.5rem);margin-top:2rem}
+.gs-val{font-family:'Cinzel',serif;font-size:clamp(20px,2.8vw,28px);color:var(--gold);text-shadow:0 0 20px rgba(201,168,76,.15)}
+.gs-lbl{font-size:9px;color:var(--text4);letter-spacing:2px;text-transform:uppercase;margin-top:3px}
+
+.how-it-works{position:relative;z-index:20;max-width:780px;margin:0 auto 1.5rem;padding:0 1.5rem}
+.hiw-inner{background:rgba(10,10,16,.85);border:1px solid rgba(201,168,76,.1);padding:1.5rem;backdrop-filter:blur(10px);position:relative}
+.hiw-inner::before,.hiw-inner::after{content:'';position:absolute;top:-1px;width:20px;height:3px;background:var(--gold3)}
+.hiw-inner::before{left:-1px}.hiw-inner::after{right:-1px}
+.hiw-title{font-family:'Cinzel',serif;font-size:12px;color:var(--gold2);letter-spacing:4px;text-transform:uppercase;text-align:center;margin-bottom:1.25rem}
+.hiw-steps{display:flex;align-items:flex-start;gap:8px;justify-content:center}
+.hiw-step{flex:1;text-align:center;max-width:220px}
+.hiw-num{font-family:'Cinzel Decorative',serif;font-size:20px;color:var(--gold3);margin-bottom:8px}
+.hiw-head{font-family:'Cinzel',serif;font-size:12px;color:var(--gold);letter-spacing:2px;text-transform:uppercase;margin-bottom:6px}
+.hiw-desc{font-size:11px;color:var(--text3);line-height:1.6}
+.hiw-arrow{font-size:16px;color:var(--gold3);margin-top:24px;opacity:.4}
+@media(max-width:600px){.hiw-steps{flex-direction:column;align-items:center}.hiw-arrow{transform:rotate(90deg);margin:4px 0}}
+
+.pool-section{position:relative;z-index:20;max-width:780px;margin:0 auto 1.5rem;padding:0 1.5rem}
+.pool-inner{background:rgba(10,10,16,.85);border:1px solid rgba(201,168,76,.15);padding:1.25rem 1.5rem;backdrop-filter:blur(10px);display:flex;justify-content:space-between;align-items:center;gap:1.5rem;flex-wrap:wrap;position:relative}
+.pool-inner::before,.pool-inner::after{content:'';position:absolute;top:-1px;width:20px;height:3px;background:var(--gold3)}
+.pool-inner::before{left:-1px}.pool-inner::after{right:-1px}
+.pool-label{font-family:'Cinzel',serif;font-size:11px;color:var(--gold2);letter-spacing:2px;text-transform:uppercase;margin-bottom:6px}
+.pool-amount{font-family:'Cinzel',serif;font-size:clamp(28px,4vw,38px);color:var(--gold);text-shadow:0 0 20px rgba(201,168,76,.2);margin-bottom:4px}
+.pool-sub{font-size:10px;color:var(--text3);margin-bottom:6px}
+.pool-timer{font-family:'DM Mono',monospace;font-size:11px;color:var(--text2)}
+.pool-countdown{color:var(--gold2)}
+.pool-split-row{display:flex;align-items:center;gap:10px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.025);min-width:200px}
+.pool-place{font-family:'Cinzel',serif;font-size:12px;color:var(--gold);width:32px}
+.pool-pct{font-size:11px;color:var(--text3);width:36px;text-align:center}
+.pool-val{font-family:'DM Mono',monospace;font-size:13px;color:var(--text);flex:1;text-align:right}
+.pool-breakdown{background:rgba(10,10,16,.6);border:1px solid rgba(201,168,76,.08);border-top:none;padding:1.5rem 1.5rem;margin-top:-1px}
+.pool-breakdown-title{font-family:'Cinzel',serif;font-size:11px;color:var(--gold2);letter-spacing:3px;text-transform:uppercase;margin-bottom:14px;text-align:center;text-shadow:0 0 15px rgba(201,168,76,.2)}
+.pool-bars{display:flex;flex-direction:column;gap:8px}
+.pool-bar{position:relative;height:38px;background:rgba(255,255,255,.025);overflow:hidden;border:1px solid rgba(201,168,76,.06);border-radius:2px}
+.pool-bar-fill{height:100%;opacity:.55;position:absolute;top:0;left:0;box-shadow:0 0 30px rgba(201,168,76,.25),inset 0 0 12px rgba(255,255,255,.06);transition:opacity .5s}
+.pool-bar:hover .pool-bar-fill{opacity:.75}
+.pool-bar-label{position:absolute;inset:0;display:flex;justify-content:space-between;align-items:center;padding:0 16px;font-size:12px;z-index:2}
+.pool-bar-label span:first-child{color:var(--text);font-family:'Cinzel',serif;letter-spacing:1.5px;font-weight:500;text-shadow:0 1px 4px rgba(0,0,0,.95),0 0 12px rgba(0,0,0,.8),0 0 20px rgba(0,0,0,.6)}
+.pool-bar-label span:last-child{color:var(--gold-bright);font-family:'DM Mono',monospace;font-weight:600;font-size:13px;text-shadow:0 1px 4px rgba(0,0,0,.95),0 0 10px rgba(0,0,0,.8)}
+
+/* THE GRAVEYARD - REAL TOMBSTONE IMAGES */
+.cemetery{position:relative;z-index:15;max-width:1400px;margin:3rem auto;padding:0 1.5rem 4rem}
+.cemetery-title{text-align:center;margin-bottom:1rem}
+.cemetery-title-text{font-family:'Cinzel Decorative',serif;font-size:clamp(22px,3vw,32px);color:var(--gold);letter-spacing:4px;text-transform:uppercase;margin-bottom:6px;text-shadow:0 0 30px rgba(201,168,76,.15)}
+.cemetery-title-sub{font-family:'Cinzel',serif;font-size:11px;color:var(--text3);letter-spacing:3px;text-transform:uppercase}
+
+.graves{display:grid;grid-template-columns:repeat(12,1fr);gap:14px;margin-top:2rem}
+
+.grave{position:relative;cursor:pointer;transition:transform .5s cubic-bezier(.23,1,.32,1);animation:fadeUp .8s ease-out both;overflow:hidden;background:#000}
+.grave:hover{transform:translateY(-6px) scale(1.01);z-index:50}
+.grave:hover .grave-overlay{opacity:1}
+.grave:hover .grave-glow{opacity:1}
+.grave:hover .grave-img{filter:brightness(1.1)}
+
+.grave-img{width:100%;height:100%;object-fit:cover;display:block;transition:filter .5s;position:relative;z-index:1}
+.grave-glow{position:absolute;top:0;left:0;right:0;bottom:0;box-shadow:inset 0 0 60px rgba(201,168,76,.15);opacity:0;transition:opacity .5s;pointer-events:none;z-index:2}
+
+.grave-overlay{position:absolute;left:0;right:0;bottom:0;padding:14px 16px 16px;background:linear-gradient(180deg,transparent 0%,rgba(5,5,8,.4) 30%,rgba(5,5,8,.92) 80%,rgba(5,5,8,.98) 100%);opacity:.92;transition:opacity .5s;z-index:3;pointer-events:none}
+
+.grave-name{font-family:'Cinzel',serif;font-weight:700;color:var(--gold);text-align:center;letter-spacing:1.5px;text-shadow:0 0 10px rgba(0,0,0,.9),0 0 20px rgba(201,168,76,.3);margin-bottom:2px;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.grave-chain{font-size:9px;color:var(--text3);text-align:center;letter-spacing:1px;margin-bottom:6px;text-transform:uppercase}
+.grave-loss{font-family:'DM Mono',monospace;color:var(--red2);text-align:center;font-weight:500;text-shadow:0 0 10px rgba(0,0,0,.9),0 0 15px rgba(192,64,48,.3);line-height:1.1;margin-bottom:2px}
+.grave-pct{font-size:9px;color:var(--red);opacity:.7;text-align:center;margin-bottom:6px}
+.grave-orn{font-size:7px;color:rgba(201,168,76,.3);text-align:center;letter-spacing:2px;margin-bottom:4px}
+.grave-epitaph{font-size:9px;color:var(--text2);font-style:italic;text-align:center;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;text-shadow:0 0 8px rgba(0,0,0,.9);padding:0 4px}
+.grave-votes{font-size:9px;color:var(--gold3);text-align:center;margin-top:6px;letter-spacing:1px}
+.grave-spent{position:absolute;top:8px;right:8px;background:rgba(5,5,8,.85);border:1px solid rgba(201,168,76,.2);color:var(--gold);font-family:'DM Mono',monospace;font-size:9px;padding:3px 7px;letter-spacing:.5px;z-index:4;backdrop-filter:blur(4px)}
+
+/* Tier sizes - grid spans */
+.grave.t-free{grid-column:span 1;aspect-ratio:2/3}
+.grave.t-2{grid-column:span 2;aspect-ratio:2/3}
+.grave.t-5{grid-column:span 2;aspect-ratio:2/3}
+.grave.t-10{grid-column:span 3;aspect-ratio:2/3}
+.grave.t-25{grid-column:span 3;aspect-ratio:2/3}
+.grave.t-50{grid-column:span 4;aspect-ratio:3/4}
+.grave.t-100{grid-column:span 4;aspect-ratio:3/4}
+.grave.t-250{grid-column:span 5;aspect-ratio:3/4}
+.grave.t-1000{grid-column:span 6;aspect-ratio:3/4}
+
+.grave.t-free .grave-name{font-size:9px}
+.grave.t-free .grave-chain,.grave.t-free .grave-pct,.grave.t-free .grave-orn,.grave.t-free .grave-epitaph,.grave.t-free .grave-votes{display:none}
+.grave.t-free .grave-loss{font-size:10px}
+.grave.t-free .grave-overlay{padding:8px}
+
+.grave.t-2 .grave-name{font-size:11px}
+.grave.t-2 .grave-loss{font-size:13px}
+.grave.t-2 .grave-orn,.grave.t-2 .grave-epitaph{display:none}
+.grave.t-2 .grave-overlay{padding:10px 12px}
+
+.grave.t-5 .grave-name{font-size:12px}
+.grave.t-5 .grave-loss{font-size:14px}
+.grave.t-5 .grave-orn{display:none}
+.grave.t-5 .grave-epitaph{font-size:8px;-webkit-line-clamp:1}
+.grave.t-5 .grave-overlay{padding:10px 12px}
+
+.grave.t-10 .grave-name{font-size:14px;color:var(--gold-bright)}
+.grave.t-10 .grave-loss{font-size:16px}
+
+.grave.t-25 .grave-name{font-size:15px;color:var(--gold-bright)}
+.grave.t-25 .grave-loss{font-size:18px}
+.grave.t-25{animation:fadeUp .8s ease-out both,pulseGold 5s ease-in-out infinite 1s}
+
+.grave.t-50 .grave-name{font-size:17px;color:var(--gold-bright);letter-spacing:2px}
+.grave.t-50 .grave-loss{font-size:20px}
+.grave.t-50 .grave-overlay{padding:18px 20px 22px}
+.grave.t-50{animation:fadeUp .8s ease-out both,pulseGold 4.5s ease-in-out infinite}
+
+.grave.t-100 .grave-name{font-size:19px;color:var(--gold-bright);letter-spacing:2px;text-shadow:0 0 12px rgba(0,0,0,.9),0 0 25px rgba(201,168,76,.4)}
+.grave.t-100 .grave-loss{font-size:22px}
+.grave.t-100 .grave-overlay{padding:20px 22px 24px}
+.grave.t-100{animation:fadeUp .8s ease-out both,pulseGold 4s ease-in-out infinite}
+
+.grave.t-250 .grave-name{font-size:22px;color:var(--gold-bright);letter-spacing:3px;text-shadow:0 0 15px rgba(0,0,0,.9),0 0 30px rgba(201,168,76,.5)}
+.grave.t-250 .grave-loss{font-size:26px;text-shadow:0 0 12px rgba(0,0,0,.9),0 0 20px rgba(192,64,48,.4)}
+.grave.t-250 .grave-overlay{padding:24px 26px 28px}
+.grave.t-250{animation:fadeUp .8s ease-out both,pulseGold 3.5s ease-in-out infinite}
+.grave.t-250 .grave-glow{box-shadow:inset 0 0 80px rgba(201,168,76,.2)}
+
+@keyframes cathedralGlow{0%,100%{box-shadow:0 0 60px rgba(201,168,76,.15),0 0 120px rgba(201,168,76,.08)}50%{box-shadow:0 0 100px rgba(201,168,76,.25),0 0 200px rgba(201,168,76,.12)}}
+.grave.t-1000 .grave-name{font-size:26px;color:var(--gold-bright);letter-spacing:4px;text-shadow:0 0 20px rgba(0,0,0,.9),0 0 40px rgba(201,168,76,.6),0 0 60px rgba(201,168,76,.3)}
+.grave.t-1000 .grave-loss{font-size:30px;text-shadow:0 0 15px rgba(0,0,0,.9),0 0 25px rgba(192,64,48,.5)}
+.grave.t-1000 .grave-overlay{padding:28px 30px 32px}
+.grave.t-1000 .grave-spent{font-size:11px;padding:5px 10px;border-color:rgba(201,168,76,.4);background:rgba(5,5,8,.92)}
+.grave.t-1000{animation:fadeUp .8s ease-out both,cathedralGlow 4s ease-in-out infinite;border:1px solid rgba(201,168,76,.15)}
+.grave.t-1000 .grave-glow{box-shadow:inset 0 0 120px rgba(201,168,76,.25)}
+.grave.t-1000::before{content:'';position:absolute;top:-30px;left:-30px;right:-30px;bottom:-30px;background:radial-gradient(ellipse at 50% 50%,rgba(201,168,76,.04) 0%,transparent 70%);pointer-events:none;z-index:-1;animation:cathedralGlow 4s ease-in-out infinite}
+.grave.t-1000 .grave-orn{color:rgba(201,168,76,.5);font-size:9px}
+.grave.t-1000 .grave-epitaph{font-size:11px;color:var(--text)}
+
+.winner-badge{position:absolute;top:-10px;left:50%;transform:translateX(-50%);z-index:10;background:linear-gradient(135deg,var(--gold2),var(--gold-bright),var(--gold2));color:var(--bg);font-family:'Cinzel',serif;font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:4px 14px;white-space:nowrap;box-shadow:0 4px 16px rgba(201,168,76,.3),0 0 20px rgba(201,168,76,.2)}
+
+.tier-picker{position:relative;z-index:20;max-width:1300px;margin:3rem auto 0;padding:3rem 1.5rem 2rem}
+.picker-inner{background:rgba(10,10,16,.85);border:1px solid rgba(201,168,76,.1);padding:2.5rem 1.5rem;backdrop-filter:blur(10px)}
+.picker-orn{font-size:8px;color:rgba(201,168,76,.15);letter-spacing:4px;margin-bottom:6px;text-align:center}
+.picker-title{font-family:'Cinzel Decorative',serif;font-size:clamp(22px,3vw,32px);color:var(--gold);letter-spacing:4px;text-transform:uppercase;text-align:center;margin-bottom:6px;text-shadow:0 0 30px rgba(201,168,76,.15)}
+.picker-sub{font-family:'Cinzel',serif;font-size:11px;color:var(--text3);letter-spacing:3px;text-transform:uppercase;text-align:center;margin-bottom:2rem}
+.picker-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;max-width:1200px;margin:0 auto}
+.tier-card{position:relative;background:rgba(5,5,8,.6);border:1px solid rgba(201,168,76,.08);cursor:pointer;transition:all .4s cubic-bezier(.23,1,.32,1);overflow:hidden;display:flex;flex-direction:column}
+.tier-card:hover{border-color:rgba(201,168,76,.4);transform:translateY(-4px);box-shadow:0 12px 30px rgba(0,0,0,.5),0 0 30px rgba(201,168,76,.1)}
+.tier-card:hover .tier-img{transform:scale(1.05)}
+.tier-img-wrap{position:relative;width:100%;aspect-ratio:3/4;overflow:hidden;background:#000}
+.tier-img-wrap::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 50%,rgba(5,5,8,.6) 100%);pointer-events:none}
+.tier-img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .6s cubic-bezier(.23,1,.32,1)}
+.tier-card:first-child .tier-img{object-position:center 55%;transform:scale(1.45)}
+.tier-card:first-child:hover .tier-img{transform:scale(1.55)}
+.tier-price{font-family:'Cinzel Decorative',serif;font-size:22px;color:var(--gold);text-align:center;padding:12px 8px 4px;letter-spacing:1px;text-shadow:0 0 20px rgba(201,168,76,.2)}
+.tier-name{font-family:'Cinzel',serif;font-size:11px;color:var(--gold-bright);letter-spacing:2px;text-align:center;text-transform:uppercase;padding:0 8px}
+.tier-desc{font-size:10px;color:var(--text3);text-align:center;padding:4px 8px 14px;font-style:italic;letter-spacing:.5px}
+.tier-flag{position:absolute;top:8px;right:8px;background:rgba(201,168,76,.95);color:var(--bg);font-family:'Cinzel',serif;font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:3px 8px;z-index:10;backdrop-filter:blur(4px)}
+.tier-card.popular{border-color:rgba(201,168,76,.25)}
+.tier-card.popular .tier-img-wrap{box-shadow:inset 0 0 40px rgba(201,168,76,.08)}
+.tier-card.whale{border-color:rgba(201,168,76,.4);background:linear-gradient(180deg,rgba(20,15,8,.7),rgba(5,5,8,.6));box-shadow:0 0 40px rgba(201,168,76,.08)}
+.tier-card.whale .tier-price{font-size:24px;color:var(--gold-bright);text-shadow:0 0 25px rgba(201,168,76,.4)}
+.tier-card.whale .tier-img-wrap{box-shadow:inset 0 0 60px rgba(201,168,76,.15)}
+.tier-flag.whale-flag{background:linear-gradient(135deg,var(--gold-bright),var(--gold));box-shadow:0 0 15px rgba(201,168,76,.4)}
+@media(max-width:700px){.picker-grid{grid-template-columns:repeat(2,1fr);gap:10px}}
+
+@media(max-width:1100px){.graves{grid-template-columns:repeat(8,1fr)}.grave.t-free{grid-column:span 2}.grave.t-50,.grave.t-100,.grave.t-250{grid-column:span 4}.grave.t-1000{grid-column:span 8}}
+@media(max-width:700px){.graves{grid-template-columns:repeat(6,1fr);gap:10px}.grave.t-free,.grave.t-2,.grave.t-5{grid-column:span 3}.grave.t-10,.grave.t-25{grid-column:span 6}.grave.t-50,.grave.t-100,.grave.t-250,.grave.t-1000{grid-column:span 6}}
+
+/* Sections */
+.section{position:relative;z-index:20;max-width:780px;margin:0 auto;padding:3rem 1.5rem 1rem}
+.section-inner{background:rgba(10,10,16,.85);border:1px solid rgba(201,168,76,.1);padding:2rem 1.5rem;backdrop-filter:blur(10px)}
+.section-orn{font-size:8px;color:rgba(201,168,76,.15);letter-spacing:4px;margin-bottom:6px;text-align:center}
+.section-title{font-family:'Cinzel Decorative',serif;font-size:clamp(20px,3vw,30px);color:var(--gold);letter-spacing:4px;text-transform:uppercase;text-align:center;margin-bottom:4px}
+.section-sub{font-family:'Cinzel',serif;font-size:11px;color:var(--text3);letter-spacing:3px;text-transform:uppercase;text-align:center;margin-bottom:1.5rem}
+
+.token-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:rgba(201,168,76,.06)}
+.token-box{background:rgba(10,10,16,.9);padding:1.25rem;transition:background .3s}
+.token-box:hover{background:rgba(20,20,30,.9)}
+.token-icon{font-size:16px;color:var(--gold3);margin-bottom:6px}
+.token-label{font-family:'Cinzel',serif;font-size:12px;color:var(--gold);letter-spacing:2px;text-transform:uppercase;margin-bottom:6px}
+.token-desc{font-size:11px;color:var(--text3);line-height:1.65}
+@media(max-width:500px){.token-grid{grid-template-columns:1fr}}
+
+.wallet-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:1rem}
+.wallet-card{background:rgba(10,10,16,.9);border:1px solid rgba(201,168,76,.06);padding:1rem .75rem;text-align:center;transition:border-color .3s}
+.wallet-card:hover{border-color:rgba(201,168,76,.15)}
+.wallet-pct{font-family:'Cinzel Decorative',serif;font-size:24px;color:var(--gold);margin-bottom:4px}
+.wallet-name{font-family:'Cinzel',serif;font-size:9px;color:var(--gold2);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;line-height:1.3}
+.wallet-addr{font-family:'DM Mono',monospace;font-size:9px;color:var(--text2);margin-bottom:8px;padding:3px 6px;background:rgba(255,255,255,.02);display:inline-block}
+.wallet-desc{font-size:9px;color:var(--text3);line-height:1.5}
+.wallet-note{text-align:center;font-size:10px;color:var(--text4);font-style:italic;letter-spacing:1px}
+@media(max-width:900px){.wallet-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:500px){.wallet-grid{grid-template-columns:1fr}}
+
+/* Modal */
+.modal-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.85);z-index:300;justify-content:center;align-items:center;backdrop-filter:blur(8px);padding:1rem}
+.modal-overlay.open{display:flex}
+.modal{background:linear-gradient(180deg,var(--bg3),var(--bg2));border:1px solid rgba(201,168,76,.2);max-width:560px;width:100%;max-height:92vh;overflow-y:auto;position:relative;box-shadow:0 20px 60px rgba(0,0,0,.6),0 0 80px rgba(201,168,76,.05)}
+.modal::before,.modal::after{content:'';position:absolute;width:30px;height:30px;border-color:var(--gold3);border-style:solid;border-width:0;z-index:5}
+.modal::before{top:8px;left:8px;border-top-width:1px;border-left-width:1px}
+.modal::after{bottom:8px;right:8px;border-bottom-width:1px;border-right-width:1px}
+.modal-close{position:absolute;top:14px;right:18px;background:rgba(5,5,8,.85);border:1px solid rgba(201,168,76,.15);color:var(--gold);font-size:20px;cursor:pointer;z-index:10;transition:all .3s;width:34px;height:34px;display:flex;align-items:center;justify-content:center;border-radius:50%;backdrop-filter:blur(8px)}
+.modal-close:hover{color:var(--gold-bright);border-color:var(--gold)}
+.modal-img-wrap{position:relative;width:100%;background:#000;display:block;overflow:hidden;border-bottom:1px solid rgba(201,168,76,.1);max-height:70vh}
+.modal-img-wrap::before{content:'';position:absolute;left:0;right:0;bottom:0;height:30%;background:linear-gradient(180deg,transparent 0%,rgba(5,5,8,.85) 100%);pointer-events:none;z-index:2}
+.modal-img{display:block;width:100%;height:auto;max-height:70vh;object-fit:contain;position:relative;z-index:1;margin:0 auto}
+.modal-body{padding:1.5rem 2rem 2rem;text-align:center}
+.modal-rip{font-family:'Cinzel',serif;font-size:9px;color:var(--text4);letter-spacing:4px;text-transform:uppercase;margin-bottom:6px}
+.modal-name{font-family:'Cinzel',serif;font-size:26px;font-weight:700;color:var(--gold-bright);letter-spacing:2px;margin-bottom:4px;text-shadow:0 0 20px rgba(201,168,76,.2)}
+.modal-chain{font-size:11px;color:var(--text3);margin-bottom:14px;letter-spacing:1px}
+.modal-loss{font-family:'DM Mono',monospace;font-size:32px;color:var(--red2);font-weight:500;margin-bottom:2px;text-shadow:0 0 20px rgba(192,64,48,.2)}
+.modal-pct{font-size:13px;color:var(--red);opacity:.6;margin-bottom:18px}
+.modal-orn{font-size:9px;color:rgba(201,168,76,.3);letter-spacing:3px;margin-bottom:18px}
+.modal-data{margin-bottom:18px;text-align:left}
+.modal-row{display:flex;justify-content:space-between;padding:8px 0;font-size:12px;border-bottom:1px solid rgba(255,255,255,.03)}
+.modal-row span:first-child{color:var(--text3);font-family:'Cinzel',serif;font-size:11px;letter-spacing:1px}
+.modal-row span:last-child{font-family:'DM Mono',monospace;color:var(--text2)}
+.modal-epitaph{font-size:14px;font-style:italic;padding:14px 16px;background:rgba(201,168,76,.03);border-left:2px solid var(--gold3);text-align:left;line-height:1.7;margin-bottom:18px;color:var(--text2)}
+.modal-spent{text-align:center;margin-bottom:18px;padding:10px;background:rgba(201,168,76,.04);border:1px solid rgba(201,168,76,.1)}
+.modal-spent-lbl{font-size:9px;color:var(--text3);letter-spacing:2px;text-transform:uppercase;margin-bottom:3px}
+.modal-spent-val{font-family:'Cinzel',serif;font-size:20px;color:var(--gold)}
+.modal-footer{display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap}
+.modal-addr{font-size:10px;color:var(--text4);font-family:'DM Mono',monospace}
+.modal-vote{background:transparent;border:1px solid var(--gold-dim);color:var(--gold);padding:8px 18px;font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;cursor:pointer;transition:all .3s;text-transform:uppercase}
+.modal-vote:hover{background:rgba(201,168,76,.08);border-color:var(--gold)}
+
+.modal-share{display:flex;justify-content:center;gap:10px;padding:16px 0;border-top:1px solid rgba(201,168,76,.06);border-bottom:1px solid rgba(201,168,76,.06);margin:18px 0}
+.modal-share-label{font-family:'Cinzel',serif;font-size:9px;color:var(--text4);letter-spacing:2px;text-transform:uppercase;width:100%;text-align:center;margin-bottom:8px}
+.share-btn{background:rgba(255,255,255,.02);border:1px solid rgba(201,168,76,.1);color:var(--gold2);width:42px;height:42px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .3s;border-radius:50%}
+.share-btn:hover{background:rgba(201,168,76,.08);border-color:var(--gold);color:var(--gold-bright);transform:translateY(-2px)}
+.share-btn svg{width:18px;height:18px;fill:currentColor}
+.share-btn.copied{background:rgba(124,179,66,.1);border-color:#7cb342;color:#7cb342}
+
+/* Bury Form Modal */
+.bury-form .modal-body{padding:2rem}
+.form-group{margin-bottom:14px}
+.form-group label{display:block;font-family:'Cinzel',serif;font-size:10px;color:var(--gold3);letter-spacing:2px;text-transform:uppercase;margin-bottom:5px}
+.form-input{width:100%;background:rgba(255,255,255,.03);border:1px solid rgba(201,168,76,.1);color:var(--text);padding:9px 12px;font-family:'DM Sans',sans-serif;font-size:13px;outline:none;transition:border-color .3s}
+.form-input:focus{border-color:var(--gold-dim)}
+.form-input::placeholder{color:var(--text4)}
+select.form-input{cursor:pointer;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6' fill='%238b6d1e'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
+select.form-input option{background:var(--bg2);color:var(--text)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.size-options{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px}
+.size-opt{background:rgba(255,255,255,.03);border:1px solid rgba(201,168,76,.08);color:var(--text3);padding:8px 4px;font-family:'DM Mono',monospace;font-size:12px;cursor:pointer;transition:all .3s;text-align:center}
+.size-opt:hover,.size-opt.active{border-color:var(--gold);color:var(--gold);background:rgba(201,168,76,.05)}
+.size-preview{display:flex;align-items:center;gap:8px;padding:6px 0;font-size:10px;color:var(--text3)}
+.size-preview-text{font-style:italic;color:var(--gold3)}
+.form-split{background:rgba(201,168,76,.03);border:1px solid rgba(201,168,76,.1);padding:12px 14px;margin-bottom:16px}
+.form-split-title{font-family:'Cinzel',serif;font-size:9px;color:var(--text3);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px}
+.form-split-row{display:flex;justify-content:space-between;padding:3px 0;font-size:11px}
+.form-split-row span:first-child{color:var(--text3)}
+.form-split-row span:last-child{color:var(--gold);font-family:'DM Mono',monospace}
+.btn-pay{width:100%;background:var(--gold);border:none;color:var(--bg);padding:14px;font-family:'Cinzel',serif;font-size:12px;letter-spacing:3px;text-transform:uppercase;cursor:pointer;font-weight:700;transition:all .3s}
+.btn-pay:hover{background:var(--gold-bright);box-shadow:0 0 30px rgba(201,168,76,.3)}
+
+footer{position:relative;z-index:20;border-top:1px solid rgba(201,168,76,.05);padding:2rem;text-align:center;margin-top:3rem}
+
+.cta-final{position:relative;z-index:20;max-width:780px;margin:5rem auto 3rem;padding:0 1.5rem}
+.cta-inner{background:linear-gradient(180deg,rgba(20,15,8,.6),rgba(10,10,16,.85));border:1px solid rgba(201,168,76,.2);padding:3rem 2rem;backdrop-filter:blur(10px);text-align:center;position:relative;box-shadow:0 0 60px rgba(201,168,76,.06)}
+.cta-inner::before,.cta-inner::after{content:'';position:absolute;width:30px;height:30px;border-color:var(--gold);border-style:solid;border-width:0}
+.cta-inner::before{top:8px;left:8px;border-top-width:1px;border-left-width:1px}
+.cta-inner::after{bottom:8px;right:8px;border-bottom-width:1px;border-right-width:1px}
+.cta-orn{font-size:10px;color:rgba(201,168,76,.3);letter-spacing:5px;margin-bottom:10px}
+.cta-title{font-family:'Cinzel Decorative',serif;font-size:clamp(24px,3.5vw,36px);color:var(--gold-bright);letter-spacing:3px;margin-bottom:8px;text-shadow:0 0 30px rgba(201,168,76,.2)}
+.cta-sub{font-family:'Cinzel',serif;font-size:13px;color:var(--text3);letter-spacing:2px;margin-bottom:2rem;font-style:italic}
+.cta-button{display:inline-block;background:var(--gold);border:none;color:var(--bg);padding:18px 48px;font-family:'Cinzel',serif;font-size:14px;letter-spacing:4px;text-transform:uppercase;cursor:pointer;font-weight:700;transition:all .4s;text-decoration:none;box-shadow:0 4px 20px rgba(201,168,76,.2)}
+.cta-button:hover{background:var(--gold-bright);box-shadow:0 8px 40px rgba(201,168,76,.4),0 0 60px rgba(201,168,76,.2);transform:translateY(-3px)}
+.cta-meta{margin-top:1.5rem;font-size:10px;color:var(--text4);letter-spacing:2px;text-transform:uppercase;font-family:'Cinzel',serif}
+footer .f-orn{font-size:8px;color:rgba(201,168,76,.15);letter-spacing:4px;margin-bottom:6px}
+footer p{font-size:10px;color:var(--text4);letter-spacing:2px;font-family:'Cinzel',serif}
+
+
+/* ============ DRAMA LAYER ============ */
+
+@keyframes moonPulse{0%,100%{box-shadow:0 0 60px rgba(232,224,200,.35),0 0 140px rgba(232,224,200,.18),0 0 280px rgba(232,224,200,.08),0 0 500px rgba(180,170,140,.04)}50%{box-shadow:0 0 80px rgba(232,224,200,.45),0 0 180px rgba(232,224,200,.22),0 0 340px rgba(232,224,200,.1),0 0 600px rgba(180,170,140,.06)}}
+@keyframes emberRise{0%{transform:translateY(0) translateX(0);opacity:0}10%{opacity:.9}90%{opacity:.6}100%{transform:translateY(-110vh) translateX(var(--drift,30px));opacity:0}}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+@keyframes borderPulse{0%,100%{border-color:rgba(201,168,76,.12);box-shadow:0 0 30px rgba(201,168,76,.04),inset 0 0 20px rgba(201,168,76,.01)}50%{border-color:rgba(201,168,76,.28);box-shadow:0 0 60px rgba(201,168,76,.12),inset 0 0 30px rgba(201,168,76,.03)}}
+@keyframes titleGlow{0%,100%{text-shadow:0 0 30px rgba(201,168,76,.25),0 0 60px rgba(201,168,76,.12),0 2px 4px rgba(0,0,0,.8)}50%{text-shadow:0 0 50px rgba(201,168,76,.4),0 0 100px rgba(201,168,76,.2),0 0 150px rgba(201,168,76,.08),0 2px 4px rgba(0,0,0,.8)}}
+@keyframes lightRay{0%{opacity:0;transform:translateY(-20px)}50%{opacity:.6}100%{opacity:0;transform:translateY(20px)}}
+@keyframes scanGold{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+
+.moon{position:fixed;top:60px;right:80px;width:90px;height:90px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#f0e8d0 0%,#d8d0b8 25%,#a8a090 60%,#787060 85%);z-index:2;animation:moonPulse 6s ease-in-out infinite;pointer-events:none}
+.moon::before{content:'';position:absolute;inset:-30px;border-radius:50%;background:radial-gradient(circle,rgba(232,224,200,.08) 0%,transparent 60%);pointer-events:none}
+.moon::after{content:'';position:absolute;inset:-100px;border-radius:50%;background:radial-gradient(circle,rgba(232,224,200,.04) 0%,transparent 70%);pointer-events:none}
+@media(max-width:700px){.moon{width:60px;height:60px;top:80px;right:30px}}
+
+.embers{position:fixed;inset:0;pointer-events:none;z-index:6;overflow:hidden}
+.ember{position:absolute;bottom:-10px;width:2px;height:2px;background:#e6c55a;border-radius:50%;box-shadow:0 0 6px 2px rgba(230,197,90,.5),0 0 12px 4px rgba(230,197,90,.2);animation:emberRise linear infinite}
+.ember:nth-child(1){left:8%;animation-duration:14s;animation-delay:0s;--drift:20px}
+.ember:nth-child(2){left:18%;animation-duration:18s;animation-delay:3s;--drift:-15px}
+.ember:nth-child(3){left:32%;animation-duration:12s;animation-delay:6s;--drift:25px}
+.ember:nth-child(4){left:45%;animation-duration:20s;animation-delay:1s;--drift:-30px}
+.ember:nth-child(5){left:58%;animation-duration:16s;animation-delay:8s;--drift:18px}
+.ember:nth-child(6){left:72%;animation-duration:13s;animation-delay:4s;--drift:-22px}
+.ember:nth-child(7){left:85%;animation-duration:17s;animation-delay:9s;--drift:28px}
+.ember:nth-child(8){left:92%;animation-duration:15s;animation-delay:2s;--drift:-12px}
+
+/* Stronger glassmorphism on nav */
+nav{background:linear-gradient(180deg,rgba(5,5,8,.85) 0%,rgba(5,5,8,.5) 70%,transparent 100%)!important;backdrop-filter:blur(16px) saturate(180%)!important;-webkit-backdrop-filter:blur(16px) saturate(180%)!important;border-bottom:1px solid rgba(201,168,76,.06)}
+
+/* Big dramatic title glow */
+.gate-title{animation:titleGlow 4s ease-in-out infinite}
+
+/* Glassmorphism upgrade for all glass cards */
+.hiw-inner,.pool-inner,.pool-breakdown,.section-inner,.picker-inner,.cta-inner{background:rgba(14,14,22,.55)!important;backdrop-filter:blur(20px) saturate(160%)!important;-webkit-backdrop-filter:blur(20px) saturate(160%)!important;border:1px solid rgba(201,168,76,.12)!important;box-shadow:0 8px 32px rgba(0,0,0,.5),0 0 60px rgba(201,168,76,.04),inset 0 1px 0 rgba(255,255,255,.04)!important}
+.pool-inner{animation:borderPulse 5s ease-in-out infinite}
+
+/* Pool amount with massive glow */
+.pool-amount{animation:titleGlow 4s ease-in-out infinite;background:linear-gradient(90deg,#c9a84c,#e6c55a,#c9a84c,#e6c55a,#c9a84c);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:shimmer 6s linear infinite,titleGlow 4s ease-in-out infinite}
+
+/* Glowing pool bars */
+.pool-bar-fill{box-shadow:0 0 20px rgba(201,168,76,.3),inset 0 0 10px rgba(255,255,255,.05);transition:all .5s}
+.pool-bar:hover .pool-bar-fill{box-shadow:0 0 30px rgba(201,168,76,.5),inset 0 0 15px rgba(255,255,255,.1)}
+
+/* Tier card glassmorphism + pulsing */
+.tier-card{background:rgba(14,14,22,.5)!important;backdrop-filter:blur(12px) saturate(140%)!important;-webkit-backdrop-filter:blur(12px) saturate(140%)!important;box-shadow:0 4px 16px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.03)!important}
+.tier-card:hover{background:rgba(20,18,30,.65)!important;box-shadow:0 16px 48px rgba(0,0,0,.6),0 0 60px rgba(201,168,76,.18),inset 0 1px 0 rgba(255,255,255,.06)!important;border-color:rgba(201,168,76,.45)!important}
+.tier-card.popular{animation:borderPulse 4s ease-in-out infinite;border-color:rgba(201,168,76,.3)!important}
+.tier-card.whale{animation:borderPulse 3s ease-in-out infinite;border-color:rgba(201,168,76,.5)!important;box-shadow:0 8px 32px rgba(0,0,0,.6),0 0 80px rgba(201,168,76,.18),inset 0 1px 0 rgba(255,255,255,.05)!important}
+.tier-card.whale:hover{box-shadow:0 16px 60px rgba(0,0,0,.7),0 0 120px rgba(201,168,76,.35),0 0 240px rgba(201,168,76,.12),inset 0 1px 0 rgba(255,255,255,.08)!important}
+.tier-price{text-shadow:0 0 30px rgba(201,168,76,.4),0 0 60px rgba(201,168,76,.15)}
+
+/* Wallet card glassmorphism */
+.wallet-card{background:rgba(14,14,22,.5)!important;backdrop-filter:blur(12px) saturate(140%)!important;-webkit-backdrop-filter:blur(12px) saturate(140%)!important;transition:all .4s!important}
+.wallet-card:hover{background:rgba(20,18,30,.7)!important;box-shadow:0 12px 36px rgba(0,0,0,.5),0 0 50px rgba(201,168,76,.12)!important;border-color:rgba(201,168,76,.3)!important;transform:translateY(-3px)}
+.wallet-pct{animation:titleGlow 5s ease-in-out infinite}
+
+/* Token box glassmorphism */
+.token-box{background:rgba(14,14,22,.6)!important;backdrop-filter:blur(8px)!important;-webkit-backdrop-filter:blur(8px)!important;transition:all .4s}
+.token-box:hover{background:rgba(24,22,32,.8)!important;box-shadow:0 0 40px rgba(201,168,76,.1) inset}
+
+/* Section titles with glow */
+.section-title,.picker-title,.cemetery-title-text,.cta-title{animation:titleGlow 5s ease-in-out infinite}
+
+/* CTA button with pulsing glow */
+.cta-button{position:relative;overflow:hidden;animation:borderPulse 3s ease-in-out infinite;background:linear-gradient(135deg,var(--gold-bright),var(--gold),var(--gold-bright))!important;background-size:200% 200%!important;animation:scanGold 4s linear infinite,borderPulse 3s ease-in-out infinite!important}
+.cta-button::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.4),transparent);transition:left .8s}
+.cta-button:hover::before{left:100%}
+
+/* Connect button glow */
+.btn-connect-big{animation:borderPulse 3s ease-in-out infinite;position:relative;overflow:hidden}
+.btn-connect-big::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.3),transparent);transition:left .8s}
+.btn-connect-big:hover::before{left:100%}
+
+/* Modal upgraded glassmorphism */
+.modal{background:rgba(14,14,22,.85)!important;backdrop-filter:blur(24px) saturate(180%)!important;-webkit-backdrop-filter:blur(24px) saturate(180%)!important;border:1px solid rgba(201,168,76,.25)!important;box-shadow:0 30px 80px rgba(0,0,0,.7),0 0 120px rgba(201,168,76,.08),inset 0 1px 0 rgba(255,255,255,.05)!important}
+.modal-overlay{background:rgba(0,0,0,.7)!important;backdrop-filter:blur(12px) saturate(140%)!important;-webkit-backdrop-filter:blur(12px) saturate(140%)!important}
+.modal-name{animation:titleGlow 4s ease-in-out infinite}
+.modal-loss{text-shadow:0 0 20px rgba(192,64,48,.4),0 0 40px rgba(192,64,48,.2),0 0 80px rgba(192,64,48,.1)}
+
+/* Iron gate stats with glow */
+.gs-val{animation:titleGlow 5s ease-in-out infinite}
+
+/* Light rays from moon */
+.light-rays{position:fixed;top:0;right:0;width:300px;height:100vh;pointer-events:none;z-index:1;background:linear-gradient(225deg,rgba(232,224,200,.04) 0%,transparent 60%);animation:lightRay 8s ease-in-out infinite}
+
+/* Stronger fog */
+.fog-layer{opacity:.08!important}
+.fog-layer:nth-child(3){background:repeating-linear-gradient(90deg,transparent 0%,rgba(220,200,160,.05) 6%,transparent 12%);animation:fogDrift 70s linear infinite;top:80%}
+
+/* Vignette much stronger for drama */
+.vignette{background:radial-gradient(ellipse 80% 70% at 50% 40%,transparent 0%,rgba(5,5,8,.4) 60%,rgba(5,5,8,.85) 100%)!important}
+
+/* Hover glow on share buttons */
+.share-btn:hover{box-shadow:0 0 25px rgba(201,168,76,.3),0 0 50px rgba(201,168,76,.1)!important}
+
+/* Buttons with gold shimmer */
+.btn-bury,.btn-pay{position:relative;overflow:hidden;background:linear-gradient(135deg,var(--gold-bright),var(--gold),var(--gold-bright))!important;background-size:200% 200%!important;animation:scanGold 5s linear infinite}
+.btn-bury::before,.btn-pay::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.35),transparent);transition:left .7s}
+.btn-bury:hover::before,.btn-pay:hover::before{left:100%}
+
+</style>
+</head>
+<body>
+
+<div class="sky"></div>
+<div class="fog"><div class="fog-layer"></div><div class="fog-layer"></div></div>
+<div class="vignette"></div>
+<div class="grain"></div>
+<div class="moon"></div>
+<div class="light-rays"></div>
+<div class="embers">
+  <div class="ember"></div>
+  <div class="ember"></div>
+  <div class="ember"></div>
+  <div class="ember"></div>
+  <div class="ember"></div>
+  <div class="ember"></div>
+  <div class="ember"></div>
+  <div class="ember"></div>
+</div>
+
+
+<nav>
+  <div class="nav-logo">&#x271D; Degen Graveyard</div>
+  <div class="nav-right">
+    <a href="#how">How It Works</a>
+    <a href="#pool">Weekly Pool</a>
+    <a href="#token">$GRAVE</a>
+    <a href="#wallets">Transparency</a>
+    <a href="graveyard.html" class="btn-bury">&#x271D; Enter Graveyard</a>
+  </div>
+</nav>
+
+<div class="page">
+
+  <div class="iron-gate">
+    <div class="gate-frame">
+      <div class="gate-pillar l"><div class="finial"></div></div>
+      <div class="gate-pillar r"><div class="finial"></div></div>
+      <div class="gate-arch-bar"></div>
+      <div class="gate-chains l"><div class="chain-link"></div><div class="chain-link"></div><div class="chain-link"></div></div>
+      <div class="gate-chains r"><div class="chain-link"></div><div class="chain-link"></div><div class="chain-link"></div></div>
+    </div>
+    <div class="gate-orn">&loz; &bull; &loz; &bull; &loz;</div>
+    <div class="gate-title">The Graveyard</div>
+    <div class="gate-subtitle">Where Rugged Tokens Find Eternal Rest</div>
+    <div class="gate-latin">Requiescat in pieces &mdash; 2,847 interred</div>
+    <div class="gate-stats">
+      <div><div class="gs-val">2,847</div><div class="gs-lbl">Buried</div></div>
+      <div><div class="gs-val">$41.2K</div><div class="gs-lbl">USDC Collected</div></div>
+      <div><div class="gs-val">$890</div><div class="gs-lbl">Weekly Prize</div></div>
+    </div>
+  </div>
+
+  <div class="how-it-works" id="how">
+    <div class="hiw-inner">
+      <div class="hiw-title">&loz; How it works &loz;</div>
+      <div class="hiw-steps">
+        <div class="hiw-step">
+          <div class="hiw-num">I</div>
+          <div class="hiw-head">Bury a token</div>
+          <div class="hiw-desc">Connect Phantom. Fill in your dead token's name, your loss, and write an epitaph. Pay USDC.</div>
+        </div>
+        <div class="hiw-arrow">&rarr;</div>
+        <div class="hiw-step">
+          <div class="hiw-num">II</div>
+          <div class="hiw-head">More USDC, bigger grave</div>
+          <div class="hiw-desc">$2 gets a plain headstone. $1,000 gets a gothic cathedral. Upgrade anytime to grow your tomb.</div>
+        </div>
+        <div class="hiw-arrow">&rarr;</div>
+        <div class="hiw-step">
+          <div class="hiw-num">III</div>
+          <div class="hiw-head">Community votes</div>
+          <div class="hiw-desc">$GRAVE holders vote weekly. Top 3 win the prize pool: 60% / 25% / 15%.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="pool-section" id="pool">
+    <div class="pool-inner">
+      <div>
+        <div class="pool-label">&#9760; Weekly prize &mdash; Week 14</div>
+        <div class="pool-amount">$890.40</div>
+        <div class="pool-sub">15% of every tombstone flows here</div>
+        <div class="pool-timer">Voting ends in <span class="pool-countdown">2d 14h 32m</span></div>
+      </div>
+      <div>
+        <div class="pool-split-row"><span class="pool-place">1st</span><span class="pool-pct">60%</span><span class="pool-val">$534.24</span></div>
+        <div class="pool-split-row"><span class="pool-place">2nd</span><span class="pool-pct">25%</span><span class="pool-val">$222.60</span></div>
+        <div class="pool-split-row"><span class="pool-place">3rd</span><span class="pool-pct">15%</span><span class="pool-val">$133.56</span></div>
+      </div>
+    </div>
+    <div class="pool-breakdown">
+      <div class="pool-breakdown-title">Where every USDC goes</div>
+      <div class="pool-bars">
+        <div class="pool-bar"><div class="pool-bar-fill" style="width:30%;background:var(--gold)"></div><div class="pool-bar-label"><span>$GRAVE holders</span><span>30%</span></div></div>
+        <div class="pool-bar"><div class="pool-bar-fill" style="width:25%;background:var(--gold2)"></div><div class="pool-bar-label"><span>Treasury</span><span>25%</span></div></div>
+        <div class="pool-bar"><div class="pool-bar-fill" style="width:20%;background:var(--gold3)"></div><div class="pool-bar-label"><span>Team &amp; marketing</span><span>20%</span></div></div>
+        <div class="pool-bar"><div class="pool-bar-fill" style="width:15%;background:#8b6d1e"></div><div class="pool-bar-label"><span>Weekly prize pool</span><span>15%</span></div></div>
+        <div class="pool-bar"><div class="pool-bar-fill" style="width:10%;background:var(--iron)"></div><div class="pool-bar-label"><span>Buyback &amp; burn</span><span>10%</span></div></div>
+      </div>
+    </div>
+  </div>
+
+
+
+  <div class="section" id="token">
+    <div class="section-inner">
+      <div class="section-orn">&loz; &bull; &loz; &bull; &loz;</div>
+      <div class="section-title">$GRAVE Token</div>
+      <div class="section-sub">Hold the token. Earn from every burial.</div>
+      <div class="token-grid">
+        <div class="token-box">
+          <div class="token-icon">&#9760;</div>
+          <div class="token-label">Hold</div>
+          <div class="token-desc">Every $GRAVE in your wallet earns a proportional share of 30% of all USDC tombstone fees. Weekly distribution, automatic.</div>
+        </div>
+        <div class="token-box">
+          <div class="token-icon">&#x2718;</div>
+          <div class="token-label">Vote</div>
+          <div class="token-desc">Your $GRAVE balance is your voting power. Vote weekly on the best tombstone. Top 3 win the prize pool.</div>
+        </div>
+        <div class="token-box">
+          <div class="token-icon">&#x2622;</div>
+          <div class="token-label">Burn</div>
+          <div class="token-desc">10% of every USDC payment auto-buys $GRAVE on Bags.fm and burns it. Permanently deflationary.</div>
+        </div>
+        <div class="token-box">
+          <div class="token-icon">&#x271D;</div>
+          <div class="token-label">Trade</div>
+          <div class="token-desc">Launched on Bags.fm with 1% perpetual royalty on every trade. Volume drives revenue.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" id="wallets">
+    <div class="section-inner">
+      <div class="section-orn">&loz; &bull; &loz; &bull; &loz;</div>
+      <div class="section-title">Where Every USDC Goes</div>
+      <div class="section-sub">5 wallets &middot; On-chain &middot; Verifiable on Solscan</div>
+      <div class="wallet-grid">
+        <div class="wallet-card"><div class="wallet-pct">30%</div><div class="wallet-name">Holder distribution</div><div class="wallet-addr">Fk3x...8mQp</div><div class="wallet-desc">Weekly to all $GRAVE holders. Sunday 12:00 UTC snapshot.</div></div>
+        <div class="wallet-card"><div class="wallet-pct">25%</div><div class="wallet-name">Treasury</div><div class="wallet-addr">HxL4...7wBn</div><div class="wallet-desc">Operations, infrastructure, hosting.</div></div>
+        <div class="wallet-card"><div class="wallet-pct">20%</div><div class="wallet-name">Team &amp; marketing</div><div class="wallet-addr">Mk7v...3xPq</div><div class="wallet-desc">KOL deals, paid promotion, growth campaigns.</div></div>
+        <div class="wallet-card"><div class="wallet-pct">15%</div><div class="wallet-name">Weekly prize pool</div><div class="wallet-addr">9vRt...2nKd</div><div class="wallet-desc">Top 3 voted tombstones win every Sunday.</div></div>
+        <div class="wallet-card"><div class="wallet-pct">10%</div><div class="wallet-name">Buyback &amp; burn</div><div class="wallet-addr">Bn8w...5jFh</div><div class="wallet-desc">Auto-buys $GRAVE on Bags.fm and burns it.</div></div>
+      </div>
+      <div class="wallet-note">All wallet addresses published at launch. Every transaction verifiable on Solscan.</div>
+    </div>
+  </div>
+
+  <div class="cta-final">
+    <div class="cta-inner">
+      <div class="cta-orn">&loz; &bull; &loz; &bull; &loz;</div>
+      <div class="cta-title">Ready to bury something?</div>
+      <div class="cta-sub">The graveyard awaits your dead bags.</div>
+      <a href="graveyard.html" class="cta-button">&#x271D; Enter The Graveyard</a>
+      <div class="cta-meta">Connect Phantom &middot; Pay USDC &middot; Rest in pieces</div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <div class="f-orn">&loz; &bull; &loz; &bull; &loz;</div>
+  <p>Degen Graveyard &mdash; MMXXVI &mdash; Built on Solana</p>
+</footer>
+
+<script>
+// Smooth scroll for nav anchors
+document.querySelectorAll('a[href^="#"]').forEach(a=>{
+  a.addEventListener('click',e=>{
+    const target=document.querySelector(a.getAttribute('href'));
+    if(target){e.preventDefault();target.scrollIntoView({behavior:'smooth',block:'start'})}
+  });
+});
+</script>
+
+</body>
+</html>
