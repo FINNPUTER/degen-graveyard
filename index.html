@@ -561,7 +561,7 @@ nav{background:linear-gradient(180deg,rgba(5,5,8,.85) 0%,rgba(5,5,8,.5) 70%,tran
     <a href="#pool">Weekly pool</a>
     <a href="#token">$GRAVE</a>
     <a href="#wallets">Transparency</a>
-    <a href="/cemetery/" class="btn-bury">&#x271D; Enter graveyard</a>
+    <a href="/graveyard/" class="btn-bury">&#x271D; Enter graveyard</a>
   </div>
 </nav>
 
@@ -571,7 +571,7 @@ nav{background:linear-gradient(180deg,rgba(5,5,8,.85) 0%,rgba(5,5,8,.5) 70%,tran
     <div class="gate-orn">&loz; &bull; &loz; &bull; &loz;</div>
     <div class="gate-title">The graveyard</div>
     <div class="gate-subtitle">Where rugged tokens find eternal rest</div>
-    <div class="gate-latin">Requiescat in pieces &mdash; 2,847 interred</div>
+    <div class="gate-latin">Requiescat in pieces &mdash; <span id="hero-buried">0</span> interred</div>
     <div class="gate-stats">
       <div><div class="gs-val" id="stat-buried">—</div><div class="gs-lbl">Buried</div></div>
       <div><div class="gs-val" id="stat-collected">—</div><div class="gs-lbl">USDC collected</div></div>
@@ -683,7 +683,7 @@ nav{background:linear-gradient(180deg,rgba(5,5,8,.85) 0%,rgba(5,5,8,.5) 70%,tran
       <div class="cta-orn">&loz; &bull; &loz; &bull; &loz;</div>
       <div class="cta-title">Ready to bury something?</div>
       <div class="cta-sub">The graveyard awaits your dead bags.</div>
-      <a href="/cemetery/" class="cta-button">&#x271D; Enter the graveyard</a>
+      <a href="/graveyard/" class="cta-button">&#x271D; Enter the graveyard</a>
       <div class="cta-meta">Connect Phantom &middot; Pay USDC &middot; Rest in pieces</div>
     </div>
   </div>
@@ -755,6 +755,7 @@ async function fetchLiveStats(){
       }
       if(buriedCount !== null){
         document.getElementById('stat-buried').textContent = formatNumber(buriedCount);
+        const hb = document.getElementById('hero-buried'); if(hb) hb.textContent = formatNumber(buriedCount);
       }
       // Also update pool amount on the landing if backend provides it
       if(data.weeklyPrize !== undefined){
@@ -796,6 +797,7 @@ async function fetchLiveStats(){
     document.getElementById('stat-prize').textContent = '$' + formatMoney(weeklyPrize);
     if(buriedCount === null){
       document.getElementById('stat-buried').textContent = '0';
+      const hb = document.getElementById('hero-buried'); if(hb) hb.textContent = '0';
     }
     // Update pool amount too
     const poolEl = document.querySelector('.pool-amount');
@@ -811,5 +813,6 @@ window.addEventListener('load', () => {
 });
 </script>
 
+<!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "935ef7232a4f407bb7f08cb942a57fce"}'></script><!-- End Cloudflare Web Analytics -->
 </body>
 </html>
